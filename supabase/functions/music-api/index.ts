@@ -16,6 +16,26 @@ const musicWebhookTelegram = async (method: string, payload: Record<string, unkn
 };
 
 const aiJson = (data: unknown, status = 200) => json(data, status);
+const isMusicAdmin = (userId: unknown) => {
+  if (typeof userId !== "number") return false;
+  const ids = (Deno.env.get("MUSIC_TELEGRAM_ADMIN_IDS") ?? Deno.env.get("TELEGRAM_ADMIN_IDS") ?? "").split(/[\s,]+/).filter(Boolean);
+  return ids.includes(String(userId));
+};
+async function musicAdminPanel() {
+  const count = async (table: string, filter?: (q: any) => any) => {
+    let q = supabase.from(table).select("id", { count: "exact", head: true });
+    if (filter) q = filter(q);
+    const result = await q;
+    return result.count ?? 0;
+  };
+  const [activeTasks, completions, pendingPayments, activeKeys] = await Promise.all([
+    count("music_tasks", (q) => q.eq("is_active", true)),
+    count("music_task_completions"),
+    count("star_payments", (q) => q.eq("status", "pending")),
+    count("music_deepai_keys", (q) => q.eq("active", true)),
+  ]);
+  return `*Music AI — Admin Panel*\n\nActive tasks: ${activeTasks}\nTask completions: ${completions}\nPending Stars payments: ${pendingPayments}\nActive DeepAI keys: ${activeKeys}`;
+}
 async function fetchTimeout(input: string, init: RequestInit, ms: number) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), ms);
@@ -204,7 +224,18 @@ Deno.serve(async (req) => {
         await starsTelegram("sendMessage", { chat_id: body.message.chat.id, text: `Payment received successfully.\\nOrder: ${payload || "music-ai"}` });
         return json({ ok: true, type: "successful_payment" });
       }
-      if (body?.message?.text === "/start") {
+      const incomingText = typeof body?.message?.text === "string" ? body.message.text.trim() : "";
+      if (incomingText === "/101") {
+        if (!isMusicAdmin(body.message.from?.id)) return json({ ok: true, type: "ignored" });
+        await musicWebhookTelegram("sendMessage", {
+          chat_id: body.message.chat.id,
+          text: await musicAdminPanel(),
+          parse_mode: "Markdown",
+          reply_markup: { inline_keyboard: [[{ text: "Refresh", callback_data: "music_admin_refresh" }]] },
+        });
+        return json({ ok: true, type: "admin" });
+      }
+      if (incomingText === "/start") {
         const photo = "https://music.megsyai.com/music-start.jpg";
         const caption = "*Music AI*\n\nMine MUSIC, GRAM and USDT from your own AI studio.";
         await musicWebhookTelegram("sendPhoto", {
@@ -214,8 +245,8 @@ Deno.serve(async (req) => {
           parse_mode: "Markdown",
           reply_markup: {
             inline_keyboard: [[
-              { text: "فتح التطبيق", url: "http://t.me/Mosuclbot/App" },
-              { text: "المجتمع", url: "https://t.me/muscox" },
+              { text: "Open App", url: "http://t.me/Mosuclbot/App" },
+              { text: "Community", url: "https://t.me/muscox" },
             ]],
           },
         });
