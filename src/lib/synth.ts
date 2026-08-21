@@ -12,8 +12,23 @@ export type Composition = {
 };
 
 const NOTE_INDEX: Record<string, number> = {
-  C: 0, "C#": 1, Db: 1, D: 2, "D#": 3, Eb: 3, E: 4, F: 5,
-  "F#": 6, Gb: 6, G: 7, "G#": 8, Ab: 8, A: 9, "A#": 10, Bb: 10, B: 11,
+  C: 0,
+  "C#": 1,
+  Db: 1,
+  D: 2,
+  "D#": 3,
+  Eb: 3,
+  E: 4,
+  F: 5,
+  "F#": 6,
+  Gb: 6,
+  G: 7,
+  "G#": 8,
+  Ab: 8,
+  A: 9,
+  "A#": 10,
+  Bb: 10,
+  B: 11,
 };
 
 function midiToFreq(m: number) {
@@ -41,7 +56,9 @@ export class TrackPlayer {
   async play(comp: Composition, onEnd?: () => void) {
     this.stop();
     this.stopFlag = false;
-    const Ctx = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    const Ctx =
+      window.AudioContext ??
+      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     const ctx = new Ctx();
     this.ctx = ctx;
     await ctx.resume();
@@ -81,7 +98,16 @@ export class TrackPlayer {
       for (let s = 0; s < 8; s++) {
         const n = notes[(b * 8 + s) % notes.length];
         if (!n) continue;
-        this.tone(ctx, master, midiToFreq(n), t0 + s * (beat / 2), beat * 0.45, 0.13, "square", 2600);
+        this.tone(
+          ctx,
+          master,
+          midiToFreq(n),
+          t0 + s * (beat / 2),
+          beat * 0.45,
+          0.13,
+          "square",
+          2600,
+        );
       }
     }
 
@@ -132,7 +158,14 @@ export class TrackPlayer {
     osc.stop(t + 0.3);
   }
 
-  private noise(ctx: AudioContext, dest: AudioNode, t: number, dur: number, cutoff: number, gain = 0.12) {
+  private noise(
+    ctx: AudioContext,
+    dest: AudioNode,
+    t: number,
+    dur: number,
+    cutoff: number,
+    gain = 0.12,
+  ) {
     const len = Math.max(1, Math.floor(ctx.sampleRate * dur));
     const buf = ctx.createBuffer(1, len, ctx.sampleRate);
     const data = buf.getChannelData(0);

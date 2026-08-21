@@ -18,7 +18,6 @@ function Inner() {
   const [depositOpen, setDepositOpen] = useState(false);
   const [amount, setAmount] = useState("");
 
-
   /* The session restores itself — the user never types an address. */
   useEffect(() => {
     if (address && address !== state.walletAddress) connectWallet(address);
@@ -64,9 +63,10 @@ function Inner() {
     }
   };
 
-
   const onWithdraw = () => {
-    const ready = MINERS.filter((m) => (m.id === "gram" ? state.gram : state.usdt) >= m.minWithdraw);
+    const ready = MINERS.filter(
+      (m) => (m.id === "gram" ? state.gram : state.usdt) >= m.minWithdraw,
+    );
     if (ready.length === 0) {
       toast.error("Nothing to withdraw yet", {
         description: `Minimum ${MINERS[0]!.minWithdraw} GRAM or ${MINERS[1]!.minWithdraw} USDT.`,
@@ -97,7 +97,6 @@ function Inner() {
         >
           <ArrowDownLeft size={16} strokeWidth={2} />
           Deposit
-
         </button>
         <button
           onClick={onWithdraw}
@@ -149,4 +148,3 @@ function Inner() {
 export default function WalletPanel() {
   return <Inner />;
 }
-

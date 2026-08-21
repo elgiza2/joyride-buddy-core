@@ -7,11 +7,27 @@
  * e.g. https://project--<id>.lovable.app — and every backend call below
  * goes there, so no secret keys are ever needed on the frontend host.
  */
-export const API_BASE = (import.meta.env["VITE_API_BASE"] ?? "").replace(/\/+$/, "");
+const SUPABASE_FUNCTION = "https://ltgampdtawuefwwayncx.supabase.co/functions/v1/music-api";
+export const API_BASE = (import.meta.env["VITE_API_BASE"] ?? SUPABASE_FUNCTION).replace(/\/+$/, "");
+
+function mapPath(path: string) {
+  const routes: Record<string, string> = {
+    "/api/public/prices": "/prices",
+    "/api/public/tasks": "/tasks",
+    "/api/public/telegram/invoice": "/telegram-invoice",
+    "/api/public/ton-verify": "/ton-verify",
+    "/api/public/tonconnect-manifest": "/tonconnect-manifest",
+    "/api/public/ai/compose": "/compose",
+    "/api/public/ai/cover": "/cover",
+    "/api/public/ai/vocals": "/vocals",
+  };
+  return routes[path] ?? path;
+}
 
 /** Absolute URL for a backend path such as `/api/public/prices`. */
 export function apiUrl(path: string) {
-  return `${API_BASE}${path.startsWith("/") ? path : `/${path}`}`;
+  const mapped = mapPath(path);
+  return `${API_BASE}${mapped.startsWith("/") ? mapped : `/${mapped}`}`;
 }
 
 /** POST JSON to a backend route and return the parsed response. */

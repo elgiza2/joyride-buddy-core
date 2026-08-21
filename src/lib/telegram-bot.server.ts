@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createClient } from "@supabase/supabase-js";
 import { getPost, PLAN_LENGTH } from "@/lib/content-plan";
 import { BRAND_IMAGE_STYLE } from "@/lib/brand";
@@ -13,7 +14,6 @@ export const MINI_APP_LINK = "http://t.me/Mosuclbot/App";
 /** Numeric channel id avoids username-resolution failures in sendPhoto/sendMessage. */
 export const MUSIC_CHANNEL_ID = -1003503918946;
 
-
 function token() {
   const t = process.env["MUSIC_TELEGRAM_BOT_TOKEN"];
   if (!t) throw new Error("MUSIC_TELEGRAM_BOT_TOKEN is not configured");
@@ -21,11 +21,9 @@ function token() {
 }
 
 export function db() {
-  return createClient(
-    process.env["SUPABASE_URL"]!,
-    process.env["SUPABASE_SERVICE_ROLE_KEY"]!,
-    { auth: { persistSession: false, autoRefreshToken: false } },
-  );
+  return createClient(process.env["SUPABASE_URL"]!, process.env["SUPABASE_SERVICE_ROLE_KEY"]!, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
 }
 
 export async function tg(method: string, body: unknown) {
@@ -60,9 +58,7 @@ export async function tgForm(method: string, form: FormData) {
 
 export function isAdmin(userId: number | undefined) {
   if (!userId) return false;
-  const ids = (process.env["MUSIC_TELEGRAM_ADMIN_IDS"] ?? "")
-    .split(/[,\s]+/)
-    .filter(Boolean);
+  const ids = (process.env["MUSIC_TELEGRAM_ADMIN_IDS"] ?? "").split(/[,\s]+/).filter(Boolean);
   return ids.includes(String(userId));
 }
 
@@ -128,7 +124,6 @@ export async function publishNext() {
     inline_keyboard: [[{ text: post.cta, url: MINI_APP_LINK }]],
   };
 
-
   const bytes = image?.startsWith("data:") ? dataUrlToBytes(image) : null;
 
   let sent: { ok: boolean; result?: any; description?: string };
@@ -139,7 +134,11 @@ export async function publishNext() {
     form.set("caption", post.caption);
     form.set("parse_mode", "Markdown");
     form.set("reply_markup", JSON.stringify(reply_markup));
-    form.set("photo", new Blob([bytes.bytes.slice().buffer as ArrayBuffer], { type: bytes.type }), "cover.png");
+    form.set(
+      "photo",
+      new Blob([bytes.bytes.slice().buffer as ArrayBuffer], { type: bytes.type }),
+      "cover.png",
+    );
     sent = await tgForm("sendPhoto", form);
   } else if (image) {
     sent = await tg("sendPhoto", {
@@ -160,14 +159,14 @@ export async function publishNext() {
 
   if (!sent.ok) return { ok: false, error: sent.description, post };
 
-  await db().from("music_channel_posts").insert({
-    day_index: state.day_index,
-    title: post.title,
-    message_id: sent.result?.message_id ?? null,
-    image_url: bytes
-      ? (sent.result?.photo?.at(-1)?.file_id ?? null)
-      : image,
-  });
+  await db()
+    .from("music_channel_posts")
+    .insert({
+      day_index: state.day_index,
+      title: post.title,
+      message_id: sent.result?.message_id ?? null,
+      image_url: bytes ? (sent.result?.photo?.at(-1)?.file_id ?? null) : image,
+    });
 
   await setState({
     day_index: (state.day_index + 1) % PLAN_LENGTH,
@@ -202,10 +201,7 @@ export async function getStats(): Promise<AdminStats> {
     count("music_deepai_keys", (q) => q.eq("active", true)),
     count("music_deepai_keys"),
   ]);
-  const { data: players } = await c
-    .from("music_task_completions")
-    .select("player_key")
-    .limit(5000);
+  const { data: players } = await c.from("music_task_completions").select("player_key").limit(5000);
   return {
     players: new Set((players ?? []).map((p: { player_key: string }) => p.player_key)).size,
     tasksDone,
@@ -247,6 +243,5 @@ export function adminPanel(state: BotState, stats?: AdminStats) {
         [{ text: "Refresh stats", callback_data: "ap:status" }],
       ],
     },
-
   };
 }

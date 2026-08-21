@@ -27,7 +27,9 @@ export function StorePanel() {
       });
       const data = (await res.json()) as { link?: string; error?: string };
       if (!res.ok || !data.link) {
-        toast.error("Stars checkout unavailable", { description: data.error ?? "Try again later." });
+        toast.error("Stars checkout unavailable", {
+          description: data.error ?? "Try again later.",
+        });
         return;
       }
       const tg = telegram();
@@ -114,11 +116,17 @@ export function StorePanel() {
                 <button
                   disabled={Boolean(busy) || Boolean(pending)}
                   onClick={() =>
-                    pay(`plan-${plan.id}`, plan.gram, plan.name, () => activateSubscription(plan.id))
+                    pay(`plan-${plan.id}`, plan.gram, plan.name, () =>
+                      activateSubscription(plan.id),
+                    )
                   }
                   className="glass-thin flex items-center justify-center gap-1.5 rounded-2xl py-3 text-xs transition-transform duration-200 active:scale-95 disabled:opacity-50"
                 >
-                  {gramBusy ? <Loader2 size={14} className="animate-spin" /> : <GramIcon size={14} />}
+                  {gramBusy ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <GramIcon size={14} />
+                  )}
                   {plan.gram} GRAM
                 </button>
               </div>

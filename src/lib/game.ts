@@ -1,13 +1,7 @@
 export type InstrumentId =
-  | "lofi-pad"
-  | "synth"
-  | "drum-machine"
-  | "grand-piano"
-  | "neural-mixer"
-  | "quantum-sampler";
+  "lofi-pad" | "synth" | "drum-machine" | "grand-piano" | "neural-mixer" | "quantum-sampler";
 
 export type Instrument = {
-
   id: InstrumentId;
   name: string;
   icon: string;
@@ -213,7 +207,6 @@ export function initialState(): GameState {
   };
 }
 
-
 /** The subscription plan currently active, if any. */
 export function activePlan(s: GameState) {
   return s.planUntil > Date.now() ? planById(s.planId) : null;
@@ -272,7 +265,7 @@ export function activeTrack(s: GameState): Track | null {
 export function multiplier(s: GameState) {
   let m = 1;
   if (s.premiumUntil > Date.now()) m *= 2;
-  
+
   if (s.boosterUntil > Date.now()) m *= 3;
   const t = activeTrack(s);
   if (t) m *= 1 + t.bonusPct / 100;
@@ -418,7 +411,6 @@ export function formatNumber(n: number) {
   return n.toFixed(n < 100 ? 2 : 0);
 }
 
-
 /* ---------------- Alternative payment pricing ---------------- */
 
 /** GRAM price for a MUSIC-denominated upgrade cost. */
@@ -430,7 +422,6 @@ export function gramForCost(musicCost: number) {
 export function starsForCost(musicCost: number) {
   return Math.max(15, Math.ceil(musicCost / 1500));
 }
-
 
 /* ---------------- Adsgram reward milestones ---------------- */
 

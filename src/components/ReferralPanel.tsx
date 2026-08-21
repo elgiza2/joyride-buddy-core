@@ -69,11 +69,20 @@ export function ReferralPanel() {
       {/* Free NFT milestone */}
       <section className="liquid-glass animate-fade-up delay-3 rounded-2xl p-4">
         <div className="flex items-center gap-4">
-          <VinylDisc src={REWARD_NFT.audioUrl} cover={REWARD_NFT.coverUrl} title={REWARD_NFT.name} tone={REWARD_NFT.tone} size={88} />
+          <VinylDisc
+            src={REWARD_NFT.audioUrl}
+            cover={REWARD_NFT.coverUrl}
+            title={REWARD_NFT.name}
+            tone={REWARD_NFT.tone}
+            size={88}
+          />
           <div className="min-w-0 flex-1">
-            <p className="text-sm tracking-tight">Invite {REFERRAL_NFT_TARGET} friends → free NFT</p>
+            <p className="text-sm tracking-tight">
+              Invite {REFERRAL_NFT_TARGET} friends → free NFT
+            </p>
             <p className="mt-1 text-[11px] leading-relaxed text-foreground/55">
-              "{REWARD_NFT.name}" unlocks GRAM and USDT mining forever and keeps producing every day.
+              "{REWARD_NFT.name}" unlocks GRAM and USDT mining forever and keeps producing every
+              day.
             </p>
             <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/12">
               <div
@@ -95,7 +104,10 @@ export function ReferralPanel() {
       <section className="liquid-glass animate-fade-up delay-3 space-y-2 rounded-2xl p-4">
         <h3 className="text-sm">Referral rewards</h3>
         {TIERS.map((t) => (
-          <div key={t.label} className="flex items-center justify-between text-xs text-foreground/80">
+          <div
+            key={t.label}
+            className="flex items-center justify-between text-xs text-foreground/80"
+          >
             <span>{t.label}</span>
             <span>+{formatNumber(t.reward)} MUSIC</span>
           </div>

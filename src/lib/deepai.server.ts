@@ -90,7 +90,10 @@ async function disable(id: string, reason: string) {
   if (id === "env" || id === "shared") return;
   const client = db();
   if (!client) return;
-  await client.from("music_deepai_keys").update({ active: false, disabled_reason: reason }).eq("id", id);
+  await client
+    .from("music_deepai_keys")
+    .update({ active: false, disabled_reason: reason })
+    .eq("id", id);
 }
 
 async function bump(row: KeyRow, ok: boolean) {

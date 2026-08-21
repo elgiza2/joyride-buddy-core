@@ -50,7 +50,6 @@ type Ctx = {
   reset: () => void;
 };
 
-
 const GameCtx = createContext<Ctx | null>(null);
 
 export function GameProvider({ children }: { children: ReactNode }) {
@@ -67,10 +66,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         if (!(parsed.nfts ?? []).includes(WELCOME_NFT_ID)) {
           parsed.nfts = [...(parsed.nfts ?? []), WELCOME_NFT_ID];
         }
-        if (
-          parsed.referrals >= REFERRAL_NFT_TARGET &&
-          !parsed.nfts.includes(REFERRAL_NFT_ID)
-        ) {
+        if (parsed.referrals >= REFERRAL_NFT_TARGET && !parsed.nfts.includes(REFERRAL_NFT_ID)) {
           parsed.nfts = [...parsed.nfts, REFERRAL_NFT_ID];
         }
         const today = todayStamp();
@@ -139,7 +135,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, []);
 
-
   const claimTask = useCallback((id: string, reward: number) => {
     setState((s) =>
       s.claimedTasks.includes(id)
@@ -156,28 +151,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setState((s) => ({ ...s, balance: s.balance + amount }));
   }, []);
 
-  const buy = useCallback(
-    (kind: "premium" | "booster" | "coins" | "gram" | "usdt", amount = 0) => {
-      setState((s) => {
-        if (kind === "premium")
-          return {
-            ...s,
-            premiumUntil: Math.max(s.premiumUntil, Date.now()) + 30 * 86_400_000,
-            minersUnlocked: { gram: true, usdt: true },
-          };
-        if (kind === "booster")
-          return { ...s, boosterUntil: Math.max(s.boosterUntil, Date.now()) + 8 * 3_600_000 };
-        if (kind === "gram" || kind === "usdt")
-          return {
-            ...s,
-            bonusLevels: (s.bonusLevels ?? 0) + amount,
-            minersUnlocked: { ...s.minersUnlocked, [kind]: true },
-          };
-        return { ...s, balance: s.balance + amount };
-      });
-    },
-    [],
-  );
+  const buy = useCallback((kind: "premium" | "booster" | "coins" | "gram" | "usdt", amount = 0) => {
+    setState((s) => {
+      if (kind === "premium")
+        return {
+          ...s,
+          premiumUntil: Math.max(s.premiumUntil, Date.now()) + 30 * 86_400_000,
+          minersUnlocked: { gram: true, usdt: true },
+        };
+      if (kind === "booster")
+        return { ...s, boosterUntil: Math.max(s.boosterUntil, Date.now()) + 8 * 3_600_000 };
+      if (kind === "gram" || kind === "usdt")
+        return {
+          ...s,
+          bonusLevels: (s.bonusLevels ?? 0) + amount,
+          minersUnlocked: { ...s.minersUnlocked, [kind]: true },
+        };
+      return { ...s, balance: s.balance + amount };
+    });
+  }, []);
 
   const addReferral = useCallback(() => {
     setState((s) => {
@@ -241,9 +233,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addNft = useCallback((id: string) => {
-    setState((s) =>
-      (s.nfts ?? []).includes(id) ? s : { ...s, nfts: [...(s.nfts ?? []), id] },
-    );
+    setState((s) => ((s.nfts ?? []).includes(id) ? s : { ...s, nfts: [...(s.nfts ?? []), id] }));
   }, []);
 
   /** Subscriptions are one-off and last forever. */
@@ -301,7 +291,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       reset,
     ],
   );
-
 
   return <GameCtx.Provider value={value}>{children}</GameCtx.Provider>;
 }

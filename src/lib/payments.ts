@@ -5,13 +5,7 @@ import { Crown, DollarSign, Gem, Rocket, Sparkles, Zap } from "lucide-react";
 export const TON_WALLET = "UQAp1QxnLJ2z44IooUovvtVShw7hJBEdxCRV3RlbCYC3D8qj";
 
 export type ShopItemId =
-  | "premium"
-  | "booster"
-  | "tracks10"
-  | "coins"
-  | "gram-rig"
-  | "usdt-rig"
-  | "mega";
+  "premium" | "booster" | "tracks10" | "coins" | "gram-rig" | "usdt-rig" | "mega";
 
 export type ShopCategory = "miners" | "boosts" | "bundles";
 
@@ -145,7 +139,18 @@ export function commentPayload(text: string) {
 
   // header: magic, flags/size=1, off_bytes=1, cells=1, roots=1, absent=0
   const full = new Uint8Array([
-    0xb5, 0xee, 0x9c, 0x72, 0x01, 0x01, 0x01, 0x01, 0x00, cell.length, 0x00, ...cell,
+    0xb5,
+    0xee,
+    0x9c,
+    0x72,
+    0x01,
+    0x01,
+    0x01,
+    0x01,
+    0x00,
+    cell.length,
+    0x00,
+    ...cell,
   ]);
 
   let bin = "";
