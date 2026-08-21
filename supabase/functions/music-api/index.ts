@@ -37,10 +37,27 @@ async function composeTrack(prompt: string) {
   } catch { return aiJson({ error: "Could not read the song" }, 502); }
 }
 
+async function lovableCover(prompt: string): Promise<string | null> {
+  const key = Deno.env.get("LOVABLE_API_KEY");
+  if (!key) return null;
+  try {
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ model: "google/gemini-2.5-flash-image", modalities: ["image", "text"], messages: [{ role: "user", content: `${prompt}, clean modern album cover, rich gradient lighting, no text, no watermark` }] }),
+    });
+    if (!res.ok) return null;
+    const body = await res.json();
+    return body?.choices?.[0]?.message?.images?.[0]?.image_url?.url ?? null;
+  } catch { return null; }
+}
+
 async function coverImage(prompt: string) {
   const keys: { id: string; api_key: string; calls: number }[] = [];
   const { data } = await supabase.from("music_deepai_keys").select("id,api_key,calls").eq("active", true).order("calls", { ascending: true }).limit(20);
   keys.push(...((data ?? []) as { id: string; api_key: string; calls: number }[]));
+  const { data: shared } = await supabase.from("api_keys").select("id,api_key").in("service", ["deapi", "deepai"]).eq("is_active", true).limit(20);
+  for (const row of (shared ?? []) as { id: string; api_key: string }[]) if (!keys.some((x) => x.api_key === row.api_key)) keys.push({ id: row.id, api_key: row.api_key, calls: 0 });
   const fallback = Deno.env.get("DEAPI_API_KEY") ?? Deno.env.get("DEEPAI_API_KEY");
   if (fallback && !keys.some((x) => x.api_key === fallback)) keys.push({ id: "env", api_key: fallback, calls: 0 });
   for (const row of keys) {
@@ -51,9 +68,11 @@ async function coverImage(prompt: string) {
       if (!res.ok) continue;
       const url = (JSON.parse(body) as { output_url?: string }).output_url;
       if (url) return aiJson({ url });
-    } catch { /* try the next key */ }
+    } catch { /* try next key */ }
   }
-  return aiJson({ error: keys.length ? "All DeAPI/DeepAI keys failed" : "No DeAPI/DeepAI key configured in Supabase" }, 502);
+  const generated = await lovableCover(prompt);
+  if (generated) return aiJson({ url: generated });
+  return aiJson({ error: keys.length ? "All DeAPI/DeepAI keys failed and image fallback is unavailable" : "No DeAPI/DeepAI key configured in Supabase" }, 502);
 }
 
 async function vocals(data: any) {
@@ -104,19 +123,27 @@ Deno.serve(async (req) => {
         const info = await musicWebhookTelegram("getWebhookInfo", {});
         return json({ me: me?.result, hook, info: info?.result });
       }
+      const starsToken = Deno.env.get("Sooo") ?? Deno.env.get("TELEGRAM_STARS_BOT_TOKEN");
+      const starsTelegram = async (method: string, payload: Record<string, unknown>) => {
+        if (!starsToken) throw new Error("Stars bot secret is not configured in Supabase");
+        const response = await fetch(`https://api.telegram.org/bot${starsToken}/${method}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
+        return await response.json();
+      };
+      if (body?.task === "stars_setup") {
+        const me = await starsTelegram("getMe", {});
+        const hook = await starsTelegram("setWebhook", { url: `${Deno.env.get("SUPABASE_URL")}/functions/v1/music-api`, allowed_updates: ["message", "pre_checkout_query"] });
+        const info = await starsTelegram("getWebhookInfo", {});
+        return json({ me: me?.result, hook, info: info?.result });
+      }
       if (body?.pre_checkout_query) {
-        const result = await musicWebhookTelegram("answerPreCheckoutQuery", {
-          pre_checkout_query_id: body.pre_checkout_query.id,
-          ok: true,
-        });
+        const result = await starsTelegram("answerPreCheckoutQuery", { pre_checkout_query_id: body.pre_checkout_query.id, ok: true });
         return json({ ok: Boolean(result?.ok), type: "pre_checkout" });
       }
       if (body?.message?.successful_payment) {
         const payment = body.message.successful_payment;
-        await musicWebhookTelegram("sendMessage", {
-          chat_id: body.message.chat.id,
-          text: `Payment received successfully.\\nOrder: ${payment.invoice_payload ?? "music-ai"}`,
-        });
+        const payload = String(payment.invoice_payload ?? "");
+        await supabase.from("star_payments").update({ status: "paid", meta: { source: "music", telegram_payment_charge_id: payment.telegram_payment_charge_id ?? null } }).eq("payload", payload);
+        await starsTelegram("sendMessage", { chat_id: body.message.chat.id, text: `Payment received successfully.\\nOrder: ${payload || "music-ai"}` });
         return json({ ok: true, type: "successful_payment" });
       }
       if (body?.message?.text === "/start") {
