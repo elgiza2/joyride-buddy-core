@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import { Check, ExternalLink, Flame, Loader2, Play, Plus, Send } from "lucide-react";
 import { toast } from "sonner";
 import { useGame } from "@/hooks/useGame";
@@ -153,7 +152,7 @@ function AdsSection() {
 /** Pay 10 GRAM to get your own task listed — the admin contact appears after payment. */
 function AddTaskCard() {
   const { pay, pending } = useGramPay();
-  const request = useServerFn(createTaskRequest);
+  const request = createTaskRequest;
   const [admin, setAdmin] = useState<string | null>(null);
 
   const start = () => {
@@ -214,8 +213,8 @@ function AddTaskCard() {
 
 function TasksTab() {
   const { state, claimTask } = useGame();
-  const fetchTasks = useServerFn(listTasks);
-  const finish = useServerFn(completeTask);
+  const fetchTasks = listTasks;
+  const finish = completeTask;
   const [tasks, setTasks] = useState<PublicTask[]>(() => readCache<PublicTask[]>("tasks") ?? []);
   const [loading, setLoading] = useState(() => (readCache<PublicTask[]>("tasks") ? false : true));
   const [busy, setBusy] = useState<string | null>(null);

@@ -1,10 +1,11 @@
+import { apiUrl } from "@/lib/api";
 /** Minimal Adsgram (sad.adsgram.ai) rewarded-ad integration. */
 
 let blockId = (import.meta.env["VITE_ADSGRAM_BLOCK_ID"] as string | undefined) ?? "43800";
 
 async function resolveBlockId() {
   try {
-    const res = await fetch("/api/public/config");
+    const res = await fetch(apiUrl("/api/public/config"));
     const data = (await res.json()) as { adsgramBlockId?: string };
     if (data.adsgramBlockId) blockId = data.adsgramBlockId;
   } catch {

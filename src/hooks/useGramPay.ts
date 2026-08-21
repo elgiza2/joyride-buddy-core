@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import { useTonAddress, useTonConnectUI } from "@tonconnect/ui-react";
 import { toast } from "sonner";
 import { TON_WALLET, commentPayload, makeMemo, telegram } from "@/lib/payments";
@@ -10,7 +9,7 @@ import { verifyTonPayment } from "@/lib/ton.functions";
  * (no manual link, no typed comment), then we confirm it on-chain.
  */
 export function useGramPay() {
-  const verify = useServerFn(verifyTonPayment);
+  const verify = verifyTonPayment;
   const [tonConnectUI] = useTonConnectUI();
   const address = useTonAddress();
   const [pending, setPending] = useState<string | null>(null);
