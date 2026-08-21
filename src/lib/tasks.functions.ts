@@ -33,7 +33,7 @@ export async function completeTask(input: {
 
 /** Records a paid listing request and reveals the admin contact. */
 export async function createTaskRequest(input: {
-  data: { playerKey: string; username?: string; txHash?: string };
+  data: { playerKey: string; username?: string | undefined; txHash?: string | undefined };
 }): Promise<{ ok: boolean; admin: string }> {
   return apiPost<{ ok: boolean; admin: string }>(PATH, { action: "request", ...input.data });
 }
