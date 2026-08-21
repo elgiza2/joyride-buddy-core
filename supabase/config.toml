@@ -1,1 +1,4 @@
 project_id = "ltgampdtawuefwwayncx"
+
+[functions.anything-api]
+verify_jwt = false
