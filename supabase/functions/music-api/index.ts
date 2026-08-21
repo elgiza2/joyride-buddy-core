@@ -254,6 +254,23 @@ async function tasks(data: any) {
 }
 
 const ITEMS: Record<string, { title: string; desc: string; stars: number }> = { premium: { title: "Premium Pass — 30 days", desc: "2x mining, 24h storage, 5 AI tracks/day", stars: 250 }, booster: { title: "3x Booster — 8 hours", desc: "Triple your mining rate for 8 hours", stars: 75 }, tracks10: { title: "10 AI track pack", desc: "Extra AI generations", stars: 100 }, coins: { title: "250,000 MUSIC bag", desc: "Instant coins for upgrades", stars: 400 }, "gram-rig": { title: "GRAM Extractor — 5 levels", desc: "Instant 5 levels of GRAM mining", stars: 900 }, "usdt-rig": { title: "USDT Rig — 5 levels", desc: "Instant 5 levels of USDT mining", stars: 1400 }, mega: { title: "Seasonal Mega Bundle", desc: "Premium + week booster + 1,000,000 MUSIC", stars: 2500 } };
+const NFT_ITEMS: Record<string, { title: string; desc: string; stars: number }> = {
+  swansong: { title: "Let It In", desc: "Music NFT with GRAM and USDT mining", stars: 270 },
+  cherry: { title: "Cherry", desc: "Music NFT with a steady GRAM stream", stars: 540 },
+  "fight-the-sea": { title: "Fight the Sea", desc: "Music NFT with GRAM and USDT mining", stars: 1080 },
+  "under-the-stairs": { title: "California Lullabye", desc: "Music NFT with daily mining", stars: 1620 },
+  "border-blaster": { title: "Shot Down", desc: "Rare Music NFT with daily mining", stars: 2160 },
+  "big-disco-ball": { title: "Big Disco Ball", desc: "Rare Music NFT with USDT mining", stars: 2880 },
+  "grey-snow": { title: "Cherubs", desc: "Rare Music NFT with stablecoin output", stars: 3780 },
+  "invisible-light": { title: "Invisible Light", desc: "Rare Music NFT with GRAM and USDT mining", stars: 4860 },
+  "private-hurricane": { title: "Faded War", desc: "Epic Music NFT with daily mining", stars: 6120 },
+  "stars-collide": { title: "Infinite Horizon", desc: "Epic Music NFT with USDT mining", stars: 7560 },
+  "the-spirit-world": { title: "The Spirit World", desc: "Epic Music NFT with GRAM and USDT mining", stars: 9360 },
+  "golden-sunrise": { title: "Golden Sunrise", desc: "Epic Music NFT with daily mining", stars: 11520 },
+  overthrown: { title: "Memory Replaced", desc: "Legendary Music NFT with daily mining", stars: 14040 },
+  gemini: { title: "Gemini", desc: "Legendary Music NFT with GRAM and USDT mining", stars: 17100 },
+  "2020": { title: "Branches", desc: "The rarest Music NFT in the vault", stars: 20700 },
+};
 async function invoice(data: any) {
   const token = Deno.env.get("Sooo");
   if (!token) return json({ error: "stars secret is not configured" }, 503);
@@ -262,10 +279,10 @@ async function invoice(data: any) {
     pro: { title: "Pro Membership", desc: "10 AI songs every day and creator perks", stars: 650 },
     elite: { title: "Elite Membership", desc: "30 AI songs every day and creator perks", stars: 1500 },
   };
-  const requestedItem = data.itemId === "plan" ? data.planId : data.itemId;
-  const item = data.itemId === "plan" ? planItems[requestedItem] : ITEMS[requestedItem];
-  if (!item) return json({ error: "Unknown item" }, 400);
-  const productKey = data.itemId === "plan" ? `plan:${requestedItem}` : `music:${data.itemId}`;
+  const requestedItem = data.itemId === "plan" ? data.planId : data.itemId === "nft" ? data.nftId : data.itemId;
+  const item = data.itemId === "plan" ? planItems[requestedItem] : data.itemId === "nft" ? NFT_ITEMS[requestedItem] : ITEMS[requestedItem];
+  if (!item) return json({ error: data.itemId === "nft" ? "Unknown NFT" : "Unknown item" }, 400);
+  const productKey = data.itemId === "plan" ? `plan:${requestedItem}` : data.itemId === "nft" ? `nft:${requestedItem}` : `music:${data.itemId}`;
   const payload = `music-ai:${productKey}:${crypto.randomUUID()}`;
   const { error: paymentError } = await supabase.from("star_payments").insert({
     profile_id: null,
@@ -274,7 +291,7 @@ async function invoice(data: any) {
     stars: item.stars,
     payload,
     status: "pending",
-    meta: { source: "music", itemId: data.itemId, planId: data.planId ?? null },
+    meta: { source: "music", itemId: data.itemId, planId: data.planId ?? null, nftId: data.nftId ?? null },
   });
   if (paymentError) return json({ error: paymentError.message }, 500);
   const r = await fetch(`https://api.telegram.org/bot${token}/createInvoiceLink`, {
