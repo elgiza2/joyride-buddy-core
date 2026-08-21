@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_watch_progress: {
+        Row: {
+          ads_watched: number
+          ads_watched_b: number
+          total_claims: number
+          total_claims_b: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ads_watched?: number
+          ads_watched_b?: number
+          total_claims?: number
+          total_claims_b?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ads_watched?: number
+          ads_watched_b?: number
+          total_claims?: number
+          total_claims_b?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_watch_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_error_log: {
         Row: {
           context: Json | null
@@ -77,182 +112,6 @@ export type Database = {
           payload?: Json
           read?: boolean
           type?: string
-        }
-        Relationships: []
-      }
-      affiliate_commissions: {
-        Row: {
-          affiliate_user_id: string
-          amount: number
-          created_at: string
-          id: string
-          order_id: string | null
-          status: string
-        }
-        Insert: {
-          affiliate_user_id: string
-          amount?: number
-          created_at?: string
-          id?: string
-          order_id?: string | null
-          status?: string
-        }
-        Update: {
-          affiliate_user_id?: string
-          amount?: number
-          created_at?: string
-          id?: string
-          order_id?: string | null
-          status?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "affiliate_commissions_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "shop_orders"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      affiliate_payouts: {
-        Row: {
-          account: string
-          amount: number
-          created_at: string
-          id: string
-          method: string
-          status: string
-          user_id: string
-        }
-        Insert: {
-          account: string
-          amount: number
-          created_at?: string
-          id?: string
-          method: string
-          status?: string
-          user_id: string
-        }
-        Update: {
-          account?: string
-          amount?: number
-          created_at?: string
-          id?: string
-          method?: string
-          status?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      affiliate_profiles: {
-        Row: {
-          balance: number
-          code: string
-          commission_rate: number
-          created_at: string
-          id: string
-          total_earned: number
-          user_id: string
-        }
-        Insert: {
-          balance?: number
-          code: string
-          commission_rate?: number
-          created_at?: string
-          id?: string
-          total_earned?: number
-          user_id: string
-        }
-        Update: {
-          balance?: number
-          code?: string
-          commission_rate?: number
-          created_at?: string
-          id?: string
-          total_earned?: number
-          user_id?: string
-        }
-        Relationships: []
-      }
-      affiliate_store_products: {
-        Row: {
-          created_at: string
-          id: string
-          is_active: boolean
-          price: number
-          product_id: string
-          store_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          is_active?: boolean
-          price: number
-          product_id: string
-          store_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          is_active?: boolean
-          price?: number
-          product_id?: string
-          store_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "affiliate_store_products_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "shop_products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "affiliate_store_products_store_id_fkey"
-            columns: ["store_id"]
-            isOneToOne: false
-            referencedRelation: "affiliate_stores"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      affiliate_stores: {
-        Row: {
-          created_at: string
-          id: string
-          is_active: boolean
-          is_premium: boolean
-          logo_url: string | null
-          name: string
-          slug: string
-          tagline: string | null
-          theme: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          is_active?: boolean
-          is_premium?: boolean
-          logo_url?: string | null
-          name: string
-          slug: string
-          tagline?: string | null
-          theme?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          is_active?: boolean
-          is_premium?: boolean
-          logo_url?: string | null
-          name?: string
-          slug?: string
-          tagline?: string | null
-          theme?: string
-          user_id?: string
         }
         Relationships: []
       }
@@ -1461,6 +1320,42 @@ export type Database = {
         }
         Relationships: []
       }
+      app_updates: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          media_type: string
+          media_url: string | null
+          published: boolean
+          published_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          media_type?: string
+          media_url?: string | null
+          published?: boolean
+          published_at?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          media_type?: string
+          media_url?: string | null
+          published?: boolean
+          published_at?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       appsumo_licenses: {
         Row: {
           activated_at: string | null
@@ -2024,346 +1919,6 @@ export type Database = {
           },
         ]
       }
-      bolt_battles: {
-        Row: {
-          character_a: string | null
-          character_b: string | null
-          created_at: string
-          hp_a: number
-          hp_b: number
-          id: string
-          max_hp_a: number
-          max_hp_b: number
-          player_a: number
-          player_b: number | null
-          stake: number
-          status: string
-          updated_at: string
-          winner: number | null
-        }
-        Insert: {
-          character_a?: string | null
-          character_b?: string | null
-          created_at?: string
-          hp_a?: number
-          hp_b?: number
-          id?: string
-          max_hp_a?: number
-          max_hp_b?: number
-          player_a: number
-          player_b?: number | null
-          stake?: number
-          status?: string
-          updated_at?: string
-          winner?: number | null
-        }
-        Update: {
-          character_a?: string | null
-          character_b?: string | null
-          created_at?: string
-          hp_a?: number
-          hp_b?: number
-          id?: string
-          max_hp_a?: number
-          max_hp_b?: number
-          player_a?: number
-          player_b?: number | null
-          stake?: number
-          status?: string
-          updated_at?: string
-          winner?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "bolt_battles_character_a_fkey"
-            columns: ["character_a"]
-            isOneToOne: false
-            referencedRelation: "bolt_characters"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "bolt_battles_character_b_fkey"
-            columns: ["character_b"]
-            isOneToOne: false
-            referencedRelation: "bolt_characters"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      bolt_characters: {
-        Row: {
-          base_damage: number
-          base_hp: number
-          created_at: string
-          id: string
-          image_url: string | null
-          name: string
-          price_ton: number
-          rarity: string
-          slug: string
-          sort_order: number
-          tagline: string | null
-          upgrade_price_ton: number
-        }
-        Insert: {
-          base_damage?: number
-          base_hp?: number
-          created_at?: string
-          id?: string
-          image_url?: string | null
-          name: string
-          price_ton?: number
-          rarity?: string
-          slug: string
-          sort_order?: number
-          tagline?: string | null
-          upgrade_price_ton?: number
-        }
-        Update: {
-          base_damage?: number
-          base_hp?: number
-          created_at?: string
-          id?: string
-          image_url?: string | null
-          name?: string
-          price_ton?: number
-          rarity?: string
-          slug?: string
-          sort_order?: number
-          tagline?: string | null
-          upgrade_price_ton?: number
-        }
-        Relationships: []
-      }
-      bolt_payments: {
-        Row: {
-          amount_ton: number
-          boc: string | null
-          created_at: string
-          id: string
-          purpose: string
-          reference: string | null
-          status: string
-          telegram_id: number
-          wallet_address: string | null
-        }
-        Insert: {
-          amount_ton: number
-          boc?: string | null
-          created_at?: string
-          id?: string
-          purpose: string
-          reference?: string | null
-          status?: string
-          telegram_id: number
-          wallet_address?: string | null
-        }
-        Update: {
-          amount_ton?: number
-          boc?: string | null
-          created_at?: string
-          id?: string
-          purpose?: string
-          reference?: string | null
-          status?: string
-          telegram_id?: number
-          wallet_address?: string | null
-        }
-        Relationships: []
-      }
-      bolt_player_characters: {
-        Row: {
-          character_id: string
-          created_at: string
-          id: string
-          level: number
-          selected: boolean
-          telegram_id: number
-          updated_at: string
-        }
-        Insert: {
-          character_id: string
-          created_at?: string
-          id?: string
-          level?: number
-          selected?: boolean
-          telegram_id: number
-          updated_at?: string
-        }
-        Update: {
-          character_id?: string
-          created_at?: string
-          id?: string
-          level?: number
-          selected?: boolean
-          telegram_id?: number
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "bolt_player_characters_character_id_fkey"
-            columns: ["character_id"]
-            isOneToOne: false
-            referencedRelation: "bolt_characters"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      bolt_players: {
-        Row: {
-          balance: number
-          created_at: string
-          first_name: string | null
-          id: string
-          last_claim_at: string
-          losses: number
-          mine_multiplier: number
-          mining_started_at: string | null
-          photo_url: string | null
-          referral_code: string
-          referral_count: number
-          referred_by: number | null
-          telegram_id: number
-          updated_at: string
-          username: string | null
-          wallet_address: string | null
-          wins: number
-        }
-        Insert: {
-          balance?: number
-          created_at?: string
-          first_name?: string | null
-          id?: string
-          last_claim_at?: string
-          losses?: number
-          mine_multiplier?: number
-          mining_started_at?: string | null
-          photo_url?: string | null
-          referral_code?: string
-          referral_count?: number
-          referred_by?: number | null
-          telegram_id: number
-          updated_at?: string
-          username?: string | null
-          wallet_address?: string | null
-          wins?: number
-        }
-        Update: {
-          balance?: number
-          created_at?: string
-          first_name?: string | null
-          id?: string
-          last_claim_at?: string
-          losses?: number
-          mine_multiplier?: number
-          mining_started_at?: string | null
-          photo_url?: string | null
-          referral_code?: string
-          referral_count?: number
-          referred_by?: number | null
-          telegram_id?: number
-          updated_at?: string
-          username?: string | null
-          wallet_address?: string | null
-          wins?: number
-        }
-        Relationships: []
-      }
-      bolt_task_completions: {
-        Row: {
-          created_at: string
-          id: string
-          task_id: string
-          telegram_id: number
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          task_id: string
-          telegram_id: number
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          task_id?: string
-          telegram_id?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "bolt_task_completions_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "bolt_tasks"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      bolt_tasks: {
-        Row: {
-          active: boolean
-          created_at: string
-          description: string | null
-          icon: string
-          id: string
-          kind: string
-          reward: number
-          sort_order: number
-          title: string
-          url: string | null
-        }
-        Insert: {
-          active?: boolean
-          created_at?: string
-          description?: string | null
-          icon?: string
-          id?: string
-          kind?: string
-          reward?: number
-          sort_order?: number
-          title: string
-          url?: string | null
-        }
-        Update: {
-          active?: boolean
-          created_at?: string
-          description?: string | null
-          icon?: string
-          id?: string
-          kind?: string
-          reward?: number
-          sort_order?: number
-          title?: string
-          url?: string | null
-        }
-        Relationships: []
-      }
-      bolt_upgrades: {
-        Row: {
-          created_at: string
-          id: string
-          label: string
-          multiplier: number
-          price_ton: number
-          sort_order: number
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          label: string
-          multiplier: number
-          price_ton: number
-          sort_order?: number
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          label?: string
-          multiplier?: number
-          price_ton?: number
-          sort_order?: number
-        }
-        Relationships: []
-      }
       books: {
         Row: {
           content: Json | null
@@ -2520,111 +2075,6 @@ export type Database = {
           status?: string
           updated_at?: string
           used_this_month?: number
-        }
-        Relationships: []
-      }
-      bundle_books: {
-        Row: {
-          cover_url: string | null
-          created_at: string
-          description: string | null
-          file_url: string | null
-          id: string
-          is_published: boolean
-          position: number
-          subtitle: string | null
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          cover_url?: string | null
-          created_at?: string
-          description?: string | null
-          file_url?: string | null
-          id?: string
-          is_published?: boolean
-          position: number
-          subtitle?: string | null
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          cover_url?: string | null
-          created_at?: string
-          description?: string | null
-          file_url?: string | null
-          id?: string
-          is_published?: boolean
-          position?: number
-          subtitle?: string | null
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      bundle_orders: {
-        Row: {
-          admin_note: string | null
-          amount: number
-          country: string
-          created_at: string
-          currency: string
-          email: string
-          full_name: string
-          id: string
-          locale: string
-          paid_at: string | null
-          payment_method: string
-          phone: string | null
-          provider: string
-          provider_ref: string | null
-          receipt_path: string | null
-          status: Database["public"]["Enums"]["bundle_order_status"]
-          transfer_reference: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          admin_note?: string | null
-          amount?: number
-          country?: string
-          created_at?: string
-          currency?: string
-          email: string
-          full_name: string
-          id?: string
-          locale?: string
-          paid_at?: string | null
-          payment_method?: string
-          phone?: string | null
-          provider?: string
-          provider_ref?: string | null
-          receipt_path?: string | null
-          status?: Database["public"]["Enums"]["bundle_order_status"]
-          transfer_reference?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          admin_note?: string | null
-          amount?: number
-          country?: string
-          created_at?: string
-          currency?: string
-          email?: string
-          full_name?: string
-          id?: string
-          locale?: string
-          paid_at?: string | null
-          payment_method?: string
-          phone?: string | null
-          provider?: string
-          provider_ref?: string | null
-          receipt_path?: string | null
-          status?: Database["public"]["Enums"]["bundle_order_status"]
-          transfer_reference?: string | null
-          updated_at?: string
-          user_id?: string
         }
         Relationships: []
       }
@@ -3045,6 +2495,125 @@ export type Database = {
         }
         Relationships: []
       }
+      computer_events: {
+        Row: {
+          created_at: string
+          detail: string | null
+          id: string
+          kind: string
+          task_id: string
+          title: string | null
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: string | null
+          id?: string
+          kind?: string
+          task_id: string
+          title?: string | null
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          detail?: string | null
+          id?: string
+          kind?: string
+          task_id?: string
+          title?: string | null
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "computer_events_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "computer_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      computer_memory: {
+        Row: {
+          conversation_id: string | null
+          facts: Json
+          id: string
+          summary: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          conversation_id?: string | null
+          facts?: Json
+          id?: string
+          summary?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          conversation_id?: string | null
+          facts?: Json
+          id?: string
+          summary?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      computer_tasks: {
+        Row: {
+          conversation_id: string | null
+          created_at: string
+          error: string | null
+          files: Json
+          id: string
+          key_id: string | null
+          message_id: string | null
+          progress: string | null
+          prompt: string
+          provider_task_id: string | null
+          result_text: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          conversation_id?: string | null
+          created_at?: string
+          error?: string | null
+          files?: Json
+          id?: string
+          key_id?: string | null
+          message_id?: string | null
+          progress?: string | null
+          prompt: string
+          provider_task_id?: string | null
+          result_text?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          conversation_id?: string | null
+          created_at?: string
+          error?: string | null
+          files?: Json
+          id?: string
+          key_id?: string | null
+          message_id?: string | null
+          progress?: string | null
+          prompt?: string
+          provider_task_id?: string | null
+          result_text?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           ai_reply: string | null
@@ -3264,81 +2833,6 @@ export type Database = {
           },
         ]
       }
-      course_orders: {
-        Row: {
-          amount: number
-          created_at: string
-          currency: string
-          id: string
-          kashier_ref: string | null
-          order_id: string
-          raw: Json | null
-          status: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          amount: number
-          created_at?: string
-          currency?: string
-          id?: string
-          kashier_ref?: string | null
-          order_id: string
-          raw?: Json | null
-          status?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          amount?: number
-          created_at?: string
-          currency?: string
-          id?: string
-          kashier_ref?: string | null
-          order_id?: string
-          raw?: Json | null
-          status?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      course_students: {
-        Row: {
-          access_code: string
-          created_at: string
-          full_name: string | null
-          has_access: boolean
-          id: string
-          phone: string | null
-          telegram_username: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          access_code?: string
-          created_at?: string
-          full_name?: string | null
-          has_access?: boolean
-          id?: string
-          phone?: string | null
-          telegram_username?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          access_code?: string
-          created_at?: string
-          full_name?: string | null
-          has_access?: boolean
-          id?: string
-          phone?: string | null
-          telegram_username?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       credit_transactions: {
         Row: {
           action_type: string
@@ -3362,90 +2856,6 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      crypto_payments: {
-        Row: {
-          amount: number
-          billing_interval: string
-          created_at: string
-          currency: string
-          id: string
-          plan: string
-          provider: string
-          raw: Json
-          reference: string
-          status: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          amount?: number
-          billing_interval?: string
-          created_at?: string
-          currency?: string
-          id?: string
-          plan: string
-          provider: string
-          raw?: Json
-          reference: string
-          status?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          amount?: number
-          billing_interval?: string
-          created_at?: string
-          currency?: string
-          id?: string
-          plan?: string
-          provider?: string
-          raw?: Json
-          reference?: string
-          status?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      customer_addresses: {
-        Row: {
-          address: string
-          created_at: string
-          customer_name: string
-          governorate: string
-          id: string
-          is_default: boolean
-          label: string
-          notes: string | null
-          phone: string
-          user_id: string
-        }
-        Insert: {
-          address: string
-          created_at?: string
-          customer_name: string
-          governorate: string
-          id?: string
-          is_default?: boolean
-          label?: string
-          notes?: string | null
-          phone: string
-          user_id: string
-        }
-        Update: {
-          address?: string
-          created_at?: string
-          customer_name?: string
-          governorate?: string
-          id?: string
-          is_default?: boolean
-          label?: string
-          notes?: string | null
-          phone?: string
           user_id?: string
         }
         Relationships: []
@@ -3649,39 +3059,6 @@ export type Database = {
           sort_order?: number
           structure?: Json
           style?: Json
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      dodo_catalog: {
-        Row: {
-          amount_cents: number
-          created_at: string
-          dodo_product_id: string
-          id: string
-          lang: string
-          mode: string
-          product: string
-          updated_at: string
-        }
-        Insert: {
-          amount_cents: number
-          created_at?: string
-          dodo_product_id: string
-          id?: string
-          lang: string
-          mode?: string
-          product: string
-          updated_at?: string
-        }
-        Update: {
-          amount_cents?: number
-          created_at?: string
-          dodo_product_id?: string
-          id?: string
-          lang?: string
-          mode?: string
-          product?: string
           updated_at?: string
         }
         Relationships: []
@@ -3977,6 +3354,63 @@ export type Database = {
         }
         Relationships: []
       }
+      game_bets: {
+        Row: {
+          created_at: string
+          game_slug: string
+          id: string
+          meta: Json
+          multiplier: number
+          payout: number
+          settled_at: string | null
+          stake: number
+          status: string
+          telegram_id: number
+        }
+        Insert: {
+          created_at?: string
+          game_slug: string
+          id?: string
+          meta?: Json
+          multiplier?: number
+          payout?: number
+          settled_at?: string | null
+          stake: number
+          status?: string
+          telegram_id: number
+        }
+        Update: {
+          created_at?: string
+          game_slug?: string
+          id?: string
+          meta?: Json
+          multiplier?: number
+          payout?: number
+          settled_at?: string | null
+          stake?: number
+          status?: string
+          telegram_id?: number
+        }
+        Relationships: []
+      }
+      game_crash_rounds: {
+        Row: {
+          crash_multiplier: number
+          created_at: string
+          round_id: number
+        }
+        Insert: {
+          crash_multiplier: number
+          created_at?: string
+          round_id: number
+        }
+        Update: {
+          crash_multiplier?: number
+          created_at?: string
+          round_id?: number
+        }
+        Relationships: []
+      }
       game_notifications: {
         Row: {
           created_at: string
@@ -4166,6 +3600,429 @@ export type Database = {
         }
         Relationships: []
       }
+      gram_ad_watch_progress: {
+        Row: {
+          ads_watched: number
+          ads_watched_b: number
+          total_claims: number
+          total_claims_b: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ads_watched?: number
+          ads_watched_b?: number
+          total_claims?: number
+          total_claims_b?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ads_watched?: number
+          ads_watched_b?: number
+          total_claims?: number
+          total_claims_b?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      gram_ai_generations: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          model: string
+          profile_id: string
+          prompt: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          model: string
+          profile_id: string
+          prompt: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          model?: string
+          profile_id?: string
+          prompt?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      gram_ai_smart_offers: {
+        Row: {
+          bonus_pct: number
+          context: Json
+          created_at: string
+          cta: string
+          expires_at: string
+          focus: string
+          headline: string
+          id: string
+          message: string
+          telegram_id: number
+        }
+        Insert: {
+          bonus_pct?: number
+          context?: Json
+          created_at?: string
+          cta?: string
+          expires_at?: string
+          focus?: string
+          headline?: string
+          id?: string
+          message?: string
+          telegram_id: number
+        }
+        Update: {
+          bonus_pct?: number
+          context?: Json
+          created_at?: string
+          cta?: string
+          expires_at?: string
+          focus?: string
+          headline?: string
+          id?: string
+          message?: string
+          telegram_id?: number
+        }
+        Relationships: []
+      }
+      gram_ai_subscriptions: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          images_used: number
+          period_start: string
+          plan: string
+          profile_id: string
+          status: string
+          updated_at: string
+          videos_used: number
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          images_used?: number
+          period_start?: string
+          plan?: string
+          profile_id: string
+          status?: string
+          updated_at?: string
+          videos_used?: number
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          images_used?: number
+          period_start?: string
+          plan?: string
+          profile_id?: string
+          status?: string
+          updated_at?: string
+          videos_used?: number
+        }
+        Relationships: []
+      }
+      gram_attacks: {
+        Row: {
+          attack_type: string
+          character_id: string | null
+          created_at: string
+          damage: number
+          id: string
+          is_killing_blow: boolean
+          package_key: string | null
+          ton_reward: number
+          user_id: string
+        }
+        Insert: {
+          attack_type?: string
+          character_id?: string | null
+          created_at?: string
+          damage?: number
+          id?: string
+          is_killing_blow?: boolean
+          package_key?: string | null
+          ton_reward?: number
+          user_id: string
+        }
+        Update: {
+          attack_type?: string
+          character_id?: string | null
+          created_at?: string
+          damage?: number
+          id?: string
+          is_killing_blow?: boolean
+          package_key?: string | null
+          ton_reward?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      gram_auto_notification_log: {
+        Row: {
+          created_at: string
+          last_sent_at: string
+          profile_id: string
+          topic: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          last_sent_at?: string
+          profile_id: string
+          topic?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          last_sent_at?: string
+          profile_id?: string
+          topic?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gram_battle_inventory: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          package_key: string
+          package_name: string
+          quantity: number
+          total_purchased: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          package_key: string
+          package_name?: string
+          quantity?: number
+          total_purchased?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          package_key?: string
+          package_name?: string
+          quantity?: number
+          total_purchased?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      gram_bot_admins: {
+        Row: {
+          added_by: number | null
+          created_at: string | null
+          id: string
+          telegram_chat_id: number
+        }
+        Insert: {
+          added_by?: number | null
+          created_at?: string | null
+          id?: string
+          telegram_chat_id: number
+        }
+        Update: {
+          added_by?: number | null
+          created_at?: string | null
+          id?: string
+          telegram_chat_id?: number
+        }
+        Relationships: []
+      }
+      gram_characters: {
+        Row: {
+          created_at: string
+          current_hp: number
+          id: string
+          image_url: string | null
+          is_active: boolean
+          max_hp: number
+          name: string
+          ton_pool: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_hp?: number
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          max_hp?: number
+          name: string
+          ton_pool?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_hp?: number
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          max_hp?: number
+          name?: string
+          ton_pool?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gram_game_crash_rounds: {
+        Row: {
+          crash_multiplier: number
+          created_at: string
+          round_id: number
+        }
+        Insert: {
+          crash_multiplier: number
+          created_at?: string
+          round_id: number
+        }
+        Update: {
+          crash_multiplier?: number
+          created_at?: string
+          round_id?: number
+        }
+        Relationships: []
+      }
+      gram_game_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      gram_inv_invest_plans: {
+        Row: {
+          apr: number
+          created_at: string
+          duration_days: number
+          early_exit_fee_pct: number
+          id: string
+          is_active: boolean
+          max_amount: number | null
+          min_amount: number
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          apr: number
+          created_at?: string
+          duration_days: number
+          early_exit_fee_pct?: number
+          id?: string
+          is_active?: boolean
+          max_amount?: number | null
+          min_amount?: number
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          apr?: number
+          created_at?: string
+          duration_days?: number
+          early_exit_fee_pct?: number
+          id?: string
+          is_active?: boolean
+          max_amount?: number | null
+          min_amount?: number
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      gram_inv_investments: {
+        Row: {
+          amount: number
+          apr: number
+          claimed_yield: number
+          closed_at: string | null
+          created_at: string
+          duration_days: number
+          early_exit_fee_pct: number
+          ends_at: string
+          id: string
+          last_claim_at: string
+          plan_id: string
+          profile_id: string
+          started_at: string
+          status: string
+        }
+        Insert: {
+          amount: number
+          apr: number
+          claimed_yield?: number
+          closed_at?: string | null
+          created_at?: string
+          duration_days: number
+          early_exit_fee_pct?: number
+          ends_at: string
+          id?: string
+          last_claim_at?: string
+          plan_id: string
+          profile_id: string
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          apr?: number
+          claimed_yield?: number
+          closed_at?: string | null
+          created_at?: string
+          duration_days?: number
+          early_exit_fee_pct?: number
+          ends_at?: string
+          id?: string
+          last_claim_at?: string
+          plan_id?: string
+          profile_id?: string
+          started_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
       gram_invest_plans: {
         Row: {
           apr: number
@@ -4263,6 +4120,1062 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      gram_mining_sessions: {
+        Row: {
+          claimed: boolean
+          created_at: string
+          ends_at: string
+          id: string
+          siri_reward: number
+          started_at: string
+          ton_reward: number
+          updated_at: string
+          usdt_reward: number
+          user_id: string
+        }
+        Insert: {
+          claimed?: boolean
+          created_at?: string
+          ends_at: string
+          id?: string
+          siri_reward?: number
+          started_at?: string
+          ton_reward?: number
+          updated_at?: string
+          usdt_reward?: number
+          user_id: string
+        }
+        Update: {
+          claimed?: boolean
+          created_at?: string
+          ends_at?: string
+          id?: string
+          siri_reward?: number
+          started_at?: string
+          ton_reward?: number
+          updated_at?: string
+          usdt_reward?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      gram_prize_broadcast_log: {
+        Row: {
+          delivered: boolean
+          profile_id: string
+          sent_at: string
+        }
+        Insert: {
+          delivered?: boolean
+          profile_id: string
+          sent_at?: string
+        }
+        Update: {
+          delivered?: boolean
+          profile_id?: string
+          sent_at?: string
+        }
+        Relationships: []
+      }
+      gram_profiles: {
+        Row: {
+          active_workspace_id: string | null
+          age_gate_acked_at: string | null
+          agents_onboarding_seen: boolean
+          avatar_url: string | null
+          chat_greeted: boolean
+          created_at: string
+          credits: number
+          display_name: string | null
+          first_name: string | null
+          id: string
+          image_free_uses: number
+          is_banned: boolean
+          last_name: string | null
+          photo_url: string | null
+          plan: string
+          referral_code: string | null
+          referred_by: string | null
+          reward_balance: number
+          reward_expires_at: string | null
+          siri_balance: number
+          telegram_id: number | null
+          ton_balance: number
+          two_factor_enabled: boolean
+          updated_at: string
+          usdt_balance: number
+          user_id: string | null
+          username: string | null
+          wallet_address: string | null
+        }
+        Insert: {
+          active_workspace_id?: string | null
+          age_gate_acked_at?: string | null
+          agents_onboarding_seen?: boolean
+          avatar_url?: string | null
+          chat_greeted?: boolean
+          created_at?: string
+          credits?: number
+          display_name?: string | null
+          first_name?: string | null
+          id?: string
+          image_free_uses?: number
+          is_banned?: boolean
+          last_name?: string | null
+          photo_url?: string | null
+          plan?: string
+          referral_code?: string | null
+          referred_by?: string | null
+          reward_balance?: number
+          reward_expires_at?: string | null
+          siri_balance?: number
+          telegram_id?: number | null
+          ton_balance?: number
+          two_factor_enabled?: boolean
+          updated_at?: string
+          usdt_balance?: number
+          user_id?: string | null
+          username?: string | null
+          wallet_address?: string | null
+        }
+        Update: {
+          active_workspace_id?: string | null
+          age_gate_acked_at?: string | null
+          agents_onboarding_seen?: boolean
+          avatar_url?: string | null
+          chat_greeted?: boolean
+          created_at?: string
+          credits?: number
+          display_name?: string | null
+          first_name?: string | null
+          id?: string
+          image_free_uses?: number
+          is_banned?: boolean
+          last_name?: string | null
+          photo_url?: string | null
+          plan?: string
+          referral_code?: string | null
+          referred_by?: string | null
+          reward_balance?: number
+          reward_expires_at?: string | null
+          siri_balance?: number
+          telegram_id?: number | null
+          ton_balance?: number
+          two_factor_enabled?: boolean
+          updated_at?: string
+          usdt_balance?: number
+          user_id?: string | null
+          username?: string | null
+          wallet_address?: string | null
+        }
+        Relationships: []
+      }
+      gram_pvp_character_owned: {
+        Row: {
+          character_key: string
+          created_at: string
+          equipped: boolean
+          id: string
+          profile_id: string
+          ton_paid: number
+          tx_hash: string | null
+          updated_at: string
+        }
+        Insert: {
+          character_key: string
+          created_at?: string
+          equipped?: boolean
+          id?: string
+          profile_id: string
+          ton_paid?: number
+          tx_hash?: string | null
+          updated_at?: string
+        }
+        Update: {
+          character_key?: string
+          created_at?: string
+          equipped?: boolean
+          id?: string
+          profile_id?: string
+          ton_paid?: number
+          tx_hash?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gram_pvp_characters: {
+        Row: {
+          color: string
+          created_at: string
+          hp_mod: number
+          id: string
+          key: string
+          name: string
+          price_ton: number
+          rarity: string
+          sort_order: number
+          speed_mod: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          hp_mod?: number
+          id?: string
+          key: string
+          name: string
+          price_ton?: number
+          rarity?: string
+          sort_order?: number
+          speed_mod?: number
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          hp_mod?: number
+          id?: string
+          key?: string
+          name?: string
+          price_ton?: number
+          rarity?: string
+          sort_order?: number
+          speed_mod?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gram_pvp_match_players: {
+        Row: {
+          alive: boolean
+          character_key: string
+          deaths: number
+          id: string
+          is_bot: boolean
+          joined_at: string
+          kills: number
+          match_id: string
+          photo_url: string | null
+          profile_id: string | null
+          score: number
+          slot: number
+          telegram_id: number | null
+          username: string
+          weapon_key: string
+        }
+        Insert: {
+          alive?: boolean
+          character_key?: string
+          deaths?: number
+          id?: string
+          is_bot?: boolean
+          joined_at?: string
+          kills?: number
+          match_id: string
+          photo_url?: string | null
+          profile_id?: string | null
+          score?: number
+          slot?: number
+          telegram_id?: number | null
+          username?: string
+          weapon_key?: string
+        }
+        Update: {
+          alive?: boolean
+          character_key?: string
+          deaths?: number
+          id?: string
+          is_bot?: boolean
+          joined_at?: string
+          kills?: number
+          match_id?: string
+          photo_url?: string | null
+          profile_id?: string | null
+          score?: number
+          slot?: number
+          telegram_id?: number | null
+          username?: string
+          weapon_key?: string
+        }
+        Relationships: []
+      }
+      gram_pvp_matches: {
+        Row: {
+          arena_seed: number
+          created_at: string
+          ends_at: string | null
+          id: string
+          max_players: number
+          mode: string
+          prize_ton: number
+          started_at: string | null
+          status: string
+          updated_at: string
+          winner_profile_id: string | null
+        }
+        Insert: {
+          arena_seed?: number
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          max_players?: number
+          mode?: string
+          prize_ton?: number
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          winner_profile_id?: string | null
+        }
+        Update: {
+          arena_seed?: number
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          max_players?: number
+          mode?: string
+          prize_ton?: number
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          winner_profile_id?: string | null
+        }
+        Relationships: []
+      }
+      gram_pvp_stats: {
+        Row: {
+          deaths: number
+          kills: number
+          matches: number
+          profile_id: string
+          rating: number
+          ton_earned: number
+          updated_at: string
+          wins: number
+        }
+        Insert: {
+          deaths?: number
+          kills?: number
+          matches?: number
+          profile_id: string
+          rating?: number
+          ton_earned?: number
+          updated_at?: string
+          wins?: number
+        }
+        Update: {
+          deaths?: number
+          kills?: number
+          matches?: number
+          profile_id?: string
+          rating?: number
+          ton_earned?: number
+          updated_at?: string
+          wins?: number
+        }
+        Relationships: []
+      }
+      gram_pvp_weapon_owned: {
+        Row: {
+          created_at: string
+          id: string
+          profile_id: string
+          ton_paid: number
+          tx_hash: string | null
+          weapon_key: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          profile_id: string
+          ton_paid?: number
+          tx_hash?: string | null
+          weapon_key: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          profile_id?: string
+          ton_paid?: number
+          tx_hash?: string | null
+          weapon_key?: string
+        }
+        Relationships: []
+      }
+      gram_pvp_weapons: {
+        Row: {
+          bullet_speed: number
+          color: string
+          created_at: string
+          damage: number
+          fire_rate_ms: number
+          is_default: boolean
+          key: string
+          name: string
+          pellets: number
+          price_ton: number
+          range_px: number
+          rarity: string
+          sort_order: number
+          spread: number
+        }
+        Insert: {
+          bullet_speed?: number
+          color?: string
+          created_at?: string
+          damage?: number
+          fire_rate_ms?: number
+          is_default?: boolean
+          key: string
+          name: string
+          pellets?: number
+          price_ton?: number
+          range_px?: number
+          rarity?: string
+          sort_order?: number
+          spread?: number
+        }
+        Update: {
+          bullet_speed?: number
+          color?: string
+          created_at?: string
+          damage?: number
+          fire_rate_ms?: number
+          is_default?: boolean
+          key?: string
+          name?: string
+          pellets?: number
+          price_ton?: number
+          range_px?: number
+          rarity?: string
+          sort_order?: number
+          spread?: number
+        }
+        Relationships: []
+      }
+      gram_referral_rewards: {
+        Row: {
+          created_at: string
+          id: string
+          referred_user_id: string
+          referrer_id: string
+          source_type: string
+          ton_amount: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referred_user_id: string
+          referrer_id: string
+          source_type?: string
+          ton_amount?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referred_user_id?: string
+          referrer_id?: string
+          source_type?: string
+          ton_amount?: number
+        }
+        Relationships: []
+      }
+      gram_servers: {
+        Row: {
+          attack_boost: number
+          created_at: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          mining_boost: number
+          name: string
+          price_ton: number
+          rarity: string
+          ton_mining_rate: number
+          updated_at: string
+          usdt_mining_rate: number
+        }
+        Insert: {
+          attack_boost?: number
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          mining_boost?: number
+          name: string
+          price_ton?: number
+          rarity?: string
+          ton_mining_rate?: number
+          updated_at?: string
+          usdt_mining_rate?: number
+        }
+        Update: {
+          attack_boost?: number
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          mining_boost?: number
+          name?: string
+          price_ton?: number
+          rarity?: string
+          ton_mining_rate?: number
+          updated_at?: string
+          usdt_mining_rate?: number
+        }
+        Relationships: []
+      }
+      gram_stakes: {
+        Row: {
+          amount: number
+          apr: number
+          claimed_yield: number
+          closed_at: string | null
+          created_at: string
+          currency: string
+          duration_days: number
+          early_exit_fee_pct: number
+          ends_at: string
+          id: string
+          last_claim_at: string
+          plan_id: string
+          profile_id: string
+          started_at: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          apr: number
+          claimed_yield?: number
+          closed_at?: string | null
+          created_at?: string
+          currency: string
+          duration_days: number
+          early_exit_fee_pct?: number
+          ends_at: string
+          id?: string
+          last_claim_at?: string
+          plan_id: string
+          profile_id: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          apr?: number
+          claimed_yield?: number
+          closed_at?: string | null
+          created_at?: string
+          currency?: string
+          duration_days?: number
+          early_exit_fee_pct?: number
+          ends_at?: string
+          id?: string
+          last_claim_at?: string
+          plan_id?: string
+          profile_id?: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gram_staking_plans: {
+        Row: {
+          apr: number
+          created_at: string
+          currency: string
+          duration_days: number
+          early_exit_fee_pct: number
+          id: string
+          is_active: boolean
+          max_amount: number | null
+          min_amount: number
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          apr: number
+          created_at?: string
+          currency: string
+          duration_days: number
+          early_exit_fee_pct?: number
+          id?: string
+          is_active?: boolean
+          max_amount?: number | null
+          min_amount?: number
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          apr?: number
+          created_at?: string
+          currency?: string
+          duration_days?: number
+          early_exit_fee_pct?: number
+          id?: string
+          is_active?: boolean
+          max_amount?: number | null
+          min_amount?: number
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gram_star_payments: {
+        Row: {
+          charge_id: string | null
+          created_at: string
+          id: string
+          meta: Json
+          paid_at: string | null
+          payload: string
+          product: string
+          profile_id: string | null
+          stars: number
+          status: string
+          telegram_id: number | null
+        }
+        Insert: {
+          charge_id?: string | null
+          created_at?: string
+          id?: string
+          meta?: Json
+          paid_at?: string | null
+          payload: string
+          product: string
+          profile_id?: string | null
+          stars: number
+          status?: string
+          telegram_id?: number | null
+        }
+        Update: {
+          charge_id?: string | null
+          created_at?: string
+          id?: string
+          meta?: Json
+          paid_at?: string | null
+          payload?: string
+          product?: string
+          profile_id?: string | null
+          stars?: number
+          status?: string
+          telegram_id?: number | null
+        }
+        Relationships: []
+      }
+      gram_subscriptions: {
+        Row: {
+          amount_cents: number | null
+          created_at: string
+          currency: string | null
+          current_period_end: string | null
+          id: string
+          plan: string
+          polar_customer_id: string | null
+          polar_product_id: string | null
+          polar_subscription_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents?: number | null
+          created_at?: string
+          currency?: string | null
+          current_period_end?: string | null
+          id?: string
+          plan?: string
+          polar_customer_id?: string | null
+          polar_product_id?: string | null
+          polar_subscription_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number | null
+          created_at?: string
+          currency?: string | null
+          current_period_end?: string | null
+          id?: string
+          plan?: string
+          polar_customer_id?: string | null
+          polar_product_id?: string | null
+          polar_subscription_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      gram_tasks: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          is_pinned: boolean
+          link: string | null
+          reward_amount: number
+          reward_type: string
+          task_type: string
+          title: string
+          updated_at: string
+          verification_type: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_pinned?: boolean
+          link?: string | null
+          reward_amount?: number
+          reward_type?: string
+          task_type?: string
+          title: string
+          updated_at?: string
+          verification_type?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_pinned?: boolean
+          link?: string | null
+          reward_amount?: number
+          reward_type?: string
+          task_type?: string
+          title?: string
+          updated_at?: string
+          verification_type?: string
+        }
+        Relationships: []
+      }
+      gram_telegram_admins: {
+        Row: {
+          created_at: string
+          id: string
+          label: string | null
+          telegram_id: number
+          updated_at: string
+          welcome_image_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label?: string | null
+          telegram_id: number
+          updated_at?: string
+          welcome_image_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string | null
+          telegram_id?: number
+          updated_at?: string
+          welcome_image_url?: string | null
+        }
+        Relationships: []
+      }
+      gram_telegram_payments: {
+        Row: {
+          amount_nano: number | null
+          amount_stars: number | null
+          amount_usd: number
+          billing_interval: string | null
+          created_at: string
+          credits: number
+          external_id: string | null
+          id: string
+          kind: string
+          method: string
+          nonce: string
+          paid_at: string | null
+          plan: string | null
+          raw: Json
+          sku: string
+          status: string
+          ton_address: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_nano?: number | null
+          amount_stars?: number | null
+          amount_usd?: number
+          billing_interval?: string | null
+          created_at?: string
+          credits?: number
+          external_id?: string | null
+          id?: string
+          kind: string
+          method: string
+          nonce: string
+          paid_at?: string | null
+          plan?: string | null
+          raw?: Json
+          sku: string
+          status?: string
+          ton_address?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_nano?: number | null
+          amount_stars?: number | null
+          amount_usd?: number
+          billing_interval?: string | null
+          created_at?: string
+          credits?: number
+          external_id?: string | null
+          id?: string
+          kind?: string
+          method?: string
+          nonce?: string
+          paid_at?: string | null
+          plan?: string | null
+          raw?: Json
+          sku?: string
+          status?: string
+          ton_address?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      gram_telegram_task_drafts: {
+        Row: {
+          created_at: string
+          draft: Json
+          telegram_id: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          draft?: Json
+          telegram_id: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          draft?: Json
+          telegram_id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gram_ton_payment_intents: {
+        Row: {
+          action: string
+          amount_nano: number
+          base_amount_nano: number | null
+          boc: string | null
+          confirmed_at: string | null
+          created_at: string
+          credited_at: string | null
+          discount_pct: number
+          discount_reason: string | null
+          expires_at: string
+          failure_reason: string | null
+          id: string
+          memo: string
+          metadata: Json
+          status: string
+          telegram_id: number
+          tx_hash: string | null
+          updated_at: string
+          wallet_address: string | null
+        }
+        Insert: {
+          action: string
+          amount_nano: number
+          base_amount_nano?: number | null
+          boc?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          credited_at?: string | null
+          discount_pct?: number
+          discount_reason?: string | null
+          expires_at?: string
+          failure_reason?: string | null
+          id?: string
+          memo: string
+          metadata?: Json
+          status?: string
+          telegram_id: number
+          tx_hash?: string | null
+          updated_at?: string
+          wallet_address?: string | null
+        }
+        Update: {
+          action?: string
+          amount_nano?: number
+          base_amount_nano?: number | null
+          boc?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          credited_at?: string | null
+          discount_pct?: number
+          discount_reason?: string | null
+          expires_at?: string
+          failure_reason?: string | null
+          id?: string
+          memo?: string
+          metadata?: Json
+          status?: string
+          telegram_id?: number
+          tx_hash?: string | null
+          updated_at?: string
+          wallet_address?: string | null
+        }
+        Relationships: []
+      }
+      gram_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          id: string
+          metadata: Json
+          status: string
+          tx_hash: string | null
+          type: string
+          updated_at: string
+          user_id: string
+          wallet_address: string | null
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          metadata?: Json
+          status?: string
+          tx_hash?: string | null
+          type: string
+          updated_at?: string
+          user_id: string
+          wallet_address?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          metadata?: Json
+          status?: string
+          tx_hash?: string | null
+          type?: string
+          updated_at?: string
+          user_id?: string
+          wallet_address?: string | null
+        }
+        Relationships: []
+      }
+      gram_user_nfts: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          name: string
+          price_ton: number
+          profile_id: string | null
+          rarity: string
+          storage_path: string | null
+          telegram_id: number
+          tx_hash: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          name?: string
+          price_ton?: number
+          profile_id?: string | null
+          rarity?: string
+          storage_path?: string | null
+          telegram_id: number
+          tx_hash?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          name?: string
+          price_ton?: number
+          profile_id?: string | null
+          rarity?: string
+          storage_path?: string | null
+          telegram_id?: number
+          tx_hash?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gram_user_servers: {
+        Row: {
+          id: string
+          purchased_at: string
+          server_id: string
+          ton_paid: number
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          purchased_at?: string
+          server_id: string
+          ton_paid?: number
+          user_id: string
+        }
+        Update: {
+          id?: string
+          purchased_at?: string
+          server_id?: string
+          ton_paid?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      gram_user_tasks: {
+        Row: {
+          completed_at: string
+          id: string
+          reward_amount: number
+          reward_type: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          reward_amount?: number
+          reward_type?: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          reward_amount?: number
+          reward_type?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       headshot_templates: {
         Row: {
@@ -4741,64 +5654,52 @@ export type Database = {
         }
         Relationships: []
       }
-      library_requests: {
-        Row: {
-          created_at: string
-          email: string
-          error: string | null
-          id: string
-          sent: boolean
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          error?: string | null
-          id?: string
-          sent?: boolean
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          error?: string | null
-          id?: string
-          sent?: boolean
-        }
-        Relationships: []
-      }
       manus_keys: {
         Row: {
           api_key: string
+          cooldown_until: string | null
           created_at: string
           failure_count: number
           id: string
           label: string | null
           last_error: string | null
           last_used_at: string | null
+          notes: string | null
+          priority: number
           status: string
+          success_count: number
           updated_at: string
           user_id: string | null
         }
         Insert: {
           api_key: string
+          cooldown_until?: string | null
           created_at?: string
           failure_count?: number
           id?: string
           label?: string | null
           last_error?: string | null
           last_used_at?: string | null
+          notes?: string | null
+          priority?: number
           status?: string
+          success_count?: number
           updated_at?: string
           user_id?: string | null
         }
         Update: {
           api_key?: string
+          cooldown_until?: string | null
           created_at?: string
           failure_count?: number
           id?: string
           label?: string | null
           last_error?: string | null
           last_used_at?: string | null
+          notes?: string | null
+          priority?: number
           status?: string
+          success_count?: number
           updated_at?: string
           user_id?: string | null
         }
@@ -6082,6 +6983,209 @@ export type Database = {
         }
         Relationships: []
       }
+      music_bot_state: {
+        Row: {
+          autopost_enabled: boolean
+          day_index: number
+          id: string
+          last_post_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          autopost_enabled?: boolean
+          day_index?: number
+          id?: string
+          last_post_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          autopost_enabled?: boolean
+          day_index?: number
+          id?: string
+          last_post_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      music_channel_posts: {
+        Row: {
+          day_index: number
+          id: string
+          image_url: string | null
+          message_id: number | null
+          posted_at: string
+          title: string
+        }
+        Insert: {
+          day_index: number
+          id?: string
+          image_url?: string | null
+          message_id?: number | null
+          posted_at?: string
+          title: string
+        }
+        Update: {
+          day_index?: number
+          id?: string
+          image_url?: string | null
+          message_id?: number | null
+          posted_at?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      music_deepai_keys: {
+        Row: {
+          active: boolean
+          api_key: string
+          calls: number
+          created_at: string
+          disabled_reason: string | null
+          failures: number
+          id: string
+          label: string | null
+          last_used_at: string | null
+        }
+        Insert: {
+          active?: boolean
+          api_key: string
+          calls?: number
+          created_at?: string
+          disabled_reason?: string | null
+          failures?: number
+          id?: string
+          label?: string | null
+          last_used_at?: string | null
+        }
+        Update: {
+          active?: boolean
+          api_key?: string
+          calls?: number
+          created_at?: string
+          disabled_reason?: string | null
+          failures?: number
+          id?: string
+          label?: string | null
+          last_used_at?: string | null
+        }
+        Relationships: []
+      }
+      music_task_completions: {
+        Row: {
+          created_at: string
+          id: string
+          player_key: string
+          task_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          player_key: string
+          task_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          player_key?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "music_task_completions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "music_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      music_task_drafts: {
+        Row: {
+          draft: Json
+          telegram_id: number
+          updated_at: string
+        }
+        Insert: {
+          draft?: Json
+          telegram_id: number
+          updated_at?: string
+        }
+        Update: {
+          draft?: Json
+          telegram_id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      music_task_requests: {
+        Row: {
+          amount_gram: number
+          created_at: string
+          id: string
+          player_key: string
+          status: string
+          tg_username: string | null
+          tx_hash: string | null
+        }
+        Insert: {
+          amount_gram?: number
+          created_at?: string
+          id?: string
+          player_key: string
+          status?: string
+          tg_username?: string | null
+          tx_hash?: string | null
+        }
+        Update: {
+          amount_gram?: number
+          created_at?: string
+          id?: string
+          player_key?: string
+          status?: string
+          tg_username?: string | null
+          tx_hash?: string | null
+        }
+        Relationships: []
+      }
+      music_tasks: {
+        Row: {
+          chat_id: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          link_url: string | null
+          reward: number
+          sort_order: number
+          title: string
+          verify: string
+        }
+        Insert: {
+          chat_id?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          link_url?: string | null
+          reward?: number
+          sort_order?: number
+          title: string
+          verify?: string
+        }
+        Update: {
+          chat_id?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          link_url?: string | null
+          reward?: number
+          sort_order?: number
+          title?: string
+          verify?: string
+        }
+        Relationships: []
+      }
       notification_preferences: {
         Row: {
           app_credits: boolean
@@ -7029,45 +8133,6 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string | null
-        }
-        Relationships: []
-      }
-      premium_subscriptions: {
-        Row: {
-          amount: number
-          created_at: string
-          expires_at: string | null
-          id: string
-          method: string
-          plan: string
-          reference: string | null
-          sender_account: string | null
-          status: string
-          user_id: string
-        }
-        Insert: {
-          amount: number
-          created_at?: string
-          expires_at?: string | null
-          id?: string
-          method: string
-          plan?: string
-          reference?: string | null
-          sender_account?: string | null
-          status?: string
-          user_id: string
-        }
-        Update: {
-          amount?: number
-          created_at?: string
-          expires_at?: string | null
-          id?: string
-          method?: string
-          plan?: string
-          reference?: string | null
-          sender_account?: string | null
-          status?: string
-          user_id?: string
         }
         Relationships: []
       }
@@ -8935,171 +10000,6 @@ export type Database = {
         }
         Relationships: []
       }
-      shop_order_items: {
-        Row: {
-          created_at: string
-          id: string
-          image_url: string | null
-          order_id: string
-          product_id: string | null
-          product_name: string
-          quantity: number
-          unit_price: number
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          image_url?: string | null
-          order_id: string
-          product_id?: string | null
-          product_name: string
-          quantity?: number
-          unit_price?: number
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          image_url?: string | null
-          order_id?: string
-          product_id?: string | null
-          product_name?: string
-          quantity?: number
-          unit_price?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "shop_order_items_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "shop_orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "shop_order_items_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "shop_products"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      shop_orders: {
-        Row: {
-          address: string
-          affiliate_code: string | null
-          created_at: string
-          customer_name: string
-          governorate: string
-          id: string
-          notes: string | null
-          order_number: number
-          phone: string
-          shipping_fee: number
-          status: string
-          store_id: string | null
-          subtotal: number
-          total: number
-          updated_at: string
-          user_id: string | null
-        }
-        Insert: {
-          address: string
-          affiliate_code?: string | null
-          created_at?: string
-          customer_name: string
-          governorate: string
-          id?: string
-          notes?: string | null
-          order_number?: number
-          phone: string
-          shipping_fee?: number
-          status?: string
-          store_id?: string | null
-          subtotal?: number
-          total?: number
-          updated_at?: string
-          user_id?: string | null
-        }
-        Update: {
-          address?: string
-          affiliate_code?: string | null
-          created_at?: string
-          customer_name?: string
-          governorate?: string
-          id?: string
-          notes?: string | null
-          order_number?: number
-          phone?: string
-          shipping_fee?: number
-          status?: string
-          store_id?: string | null
-          subtotal?: number
-          total?: number
-          updated_at?: string
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      shop_products: {
-        Row: {
-          category: string
-          compare_at_price: number | null
-          cost_price: number | null
-          created_at: string
-          description: string | null
-          id: string
-          image_url: string | null
-          images: Json
-          is_active: boolean
-          is_featured: boolean
-          name: string
-          price: number
-          stock: number
-          taager_sku: string | null
-          taager_url: string | null
-          updated_at: string
-          videos: Json
-        }
-        Insert: {
-          category?: string
-          compare_at_price?: number | null
-          cost_price?: number | null
-          created_at?: string
-          description?: string | null
-          id?: string
-          image_url?: string | null
-          images?: Json
-          is_active?: boolean
-          is_featured?: boolean
-          name: string
-          price?: number
-          stock?: number
-          taager_sku?: string | null
-          taager_url?: string | null
-          updated_at?: string
-          videos?: Json
-        }
-        Update: {
-          category?: string
-          compare_at_price?: number | null
-          cost_price?: number | null
-          created_at?: string
-          description?: string | null
-          id?: string
-          image_url?: string | null
-          images?: Json
-          is_active?: boolean
-          is_featured?: boolean
-          name?: string
-          price?: number
-          stock?: number
-          taager_sku?: string | null
-          taager_url?: string | null
-          updated_at?: string
-          videos?: Json
-        }
-        Relationships: []
-      }
       shopping_product_reports: {
         Row: {
           ai_report: string
@@ -10353,6 +11253,7 @@ export type Database = {
           boc: string | null
           confirmed_at: string | null
           created_at: string
+          credited_at: string | null
           discount_pct: number
           discount_reason: string | null
           expires_at: string
@@ -10373,6 +11274,7 @@ export type Database = {
           boc?: string | null
           confirmed_at?: string | null
           created_at?: string
+          credited_at?: string | null
           discount_pct?: number
           discount_reason?: string | null
           expires_at?: string
@@ -10393,6 +11295,7 @@ export type Database = {
           boc?: string | null
           confirmed_at?: string | null
           created_at?: string
+          credited_at?: string | null
           discount_pct?: number
           discount_reason?: string | null
           expires_at?: string
@@ -10784,6 +11687,39 @@ export type Database = {
           telegram_chat_id?: string | null
           telegram_username?: string | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_knowledge: {
+        Row: {
+          content: string
+          created_at: string
+          enabled: boolean
+          id: string
+          name: string
+          updated_at: string
+          use_when: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          name?: string
+          updated_at?: string
+          use_when: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          name?: string
+          updated_at?: string
+          use_when?: string
           user_id?: string
         }
         Relationships: []
@@ -12502,6 +13438,14 @@ export type Database = {
           o_workspace_id: string
         }[]
       }
+      ad_watch_claim:
+        | { Args: { _telegram_id: number }; Returns: Json }
+        | { Args: { _telegram_id: number; _tier?: string }; Returns: Json }
+      ad_watch_get_progress: { Args: { _telegram_id: number }; Returns: Json }
+      ad_watch_increment: {
+        Args: { _telegram_id: number; _tier?: string }
+        Returns: Json
+      }
       add_credits: {
         Args: { p_amount: number; p_description?: string; p_user_id: string }
         Returns: Json
@@ -12608,6 +13552,32 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      ai_activate_plan_with_intent: {
+        Args: {
+          _intent_id: string
+          _plan: string
+          _profile_id: string
+          _telegram_id: number
+        }
+        Returns: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          images_used: number
+          period_start: string
+          plan: string
+          profile_id: string
+          status: string
+          updated_at: string
+          videos_used: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "ai_subscriptions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       ai_get_subscription: {
         Args: { _profile_id: string }
         Returns: {
@@ -12628,6 +13598,14 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      all_prize_broadcast_targets: {
+        Args: { _limit: number; _offset?: number }
+        Returns: {
+          first_name: string
+          id: string
+          telegram_id: number
+        }[]
       }
       assert_model_access: { Args: { _model_id: string }; Returns: Json }
       attach_referral_for_telegram: {
@@ -12799,6 +13777,10 @@ export type Database = {
         }
         Returns: Json
       }
+      consume_ton_intent: {
+        Args: { _action: string; _intent_id: string; _telegram_id: number }
+        Returns: number
+      }
       create_notification: {
         Args: {
           p_message: string
@@ -12808,6 +13790,10 @@ export type Database = {
           p_user_id: string
         }
         Returns: string
+      }
+      create_smart_offer_for_telegram: {
+        Args: { _surface?: string; _telegram_id: number }
+        Returns: Json
       }
       create_workspace: {
         Args: { p_name: string; p_plan?: string }
@@ -12830,6 +13816,14 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      credit_ton_deposit_with_intent: {
+        Args: {
+          _intent_id: string
+          _telegram_id: number
+          _wallet_address?: string
+        }
+        Returns: Json
+      }
       deduct_credits: {
         Args: {
           p_action_type: string
@@ -12840,6 +13834,31 @@ export type Database = {
         Returns: Json
       }
       expire_prize_rewards: { Args: never; Returns: number }
+      game_crash_cashout: {
+        Args: { _at: number; _bet_id: string; _telegram_id: number }
+        Returns: Json
+      }
+      game_crash_history: {
+        Args: { _limit?: number }
+        Returns: {
+          crash_multiplier: number
+          round_id: number
+        }[]
+      }
+      game_crash_players: {
+        Args: { _exclude?: number; _limit?: number; _round: number }
+        Returns: {
+          name: string
+          photo_url: string
+        }[]
+      }
+      game_crash_round_result: { Args: { _round_id: number }; Returns: number }
+      game_crash_start:
+        | { Args: { _stake: number; _telegram_id: number }; Returns: Json }
+        | {
+            Args: { _round_id?: number; _stake: number; _telegram_id: number }
+            Returns: Json
+          }
       game_create_own_profile: {
         Args: {
           _first_name: string
@@ -12871,6 +13890,19 @@ export type Database = {
         Args: { _telegram_id: number }
         Returns: boolean
       }
+      game_place_bet_for_telegram: {
+        Args: { _game_slug: string; _stake: number; _telegram_id: number }
+        Returns: Json
+      }
+      game_play_round: {
+        Args: {
+          _game_slug: string
+          _params?: Json
+          _stake: number
+          _telegram_id: number
+        }
+        Returns: Json
+      }
       game_profile_id: { Args: { _telegram_id: number }; Returns: string }
       game_public_profiles: {
         Args: { _ids: string[] }
@@ -12880,6 +13912,10 @@ export type Database = {
           photo_url: string
           username: string
         }[]
+      }
+      game_settle_bet_for_telegram: {
+        Args: { _bet_id: string; _telegram_id: number; _won: boolean }
+        Returns: Json
       }
       get_battle_inventory_for_telegram: {
         Args: { _telegram_id: number }
@@ -12930,6 +13966,302 @@ export type Database = {
         Returns: Json
       }
       get_workspace_invite_details: { Args: { p_token: string }; Returns: Json }
+      gram_ad_watch_claim:
+        | { Args: { _telegram_id: number }; Returns: Json }
+        | { Args: { _telegram_id: number; _tier?: string }; Returns: Json }
+      gram_ad_watch_get_progress: {
+        Args: { _telegram_id: number }
+        Returns: Json
+      }
+      gram_ad_watch_increment: {
+        Args: { _telegram_id: number; _tier?: string }
+        Returns: Json
+      }
+      gram_admin_activate_character_for_telegram: {
+        Args: { _character_id: string; _telegram_id: number }
+        Returns: Json
+      }
+      gram_admin_activate_reward_for_telegram: {
+        Args: { _reward_amount: number; _telegram_id: number }
+        Returns: Json
+      }
+      gram_admin_broadcast_notification_for_telegram: {
+        Args: { _message: string; _telegram_id: number; _title: string }
+        Returns: Json
+      }
+      gram_admin_create_character_for_telegram: {
+        Args: {
+          _image_url: string
+          _max_hp: number
+          _name: string
+          _telegram_id: number
+        }
+        Returns: Json
+      }
+      gram_admin_create_server_for_telegram: {
+        Args: {
+          _attack_boost: number
+          _image_url: string
+          _mining_boost: number
+          _name: string
+          _price_ton: number
+          _rarity: string
+          _telegram_id: number
+          _ton_mining_rate: number
+          _usdt_mining_rate: number
+        }
+        Returns: Json
+      }
+      gram_admin_delete_task_for_telegram: {
+        Args: { _task_id: string; _telegram_id: number }
+        Returns: Json
+      }
+      gram_admin_get_dashboard_for_telegram: {
+        Args: { _telegram_id: number }
+        Returns: Json
+      }
+      gram_admin_pin_task_for_telegram: {
+        Args: { _is_pinned: boolean; _task_id: string; _telegram_id: number }
+        Returns: Json
+      }
+      gram_admin_set_welcome_image_for_telegram: {
+        Args: { _telegram_id: number; _url: string }
+        Returns: Json
+      }
+      gram_admin_toggle_ban_for_telegram: {
+        Args: { _is_banned: boolean; _profile_id: string; _telegram_id: number }
+        Returns: Json
+      }
+      gram_admin_toggle_task_for_telegram: {
+        Args: { _is_active: boolean; _task_id: string; _telegram_id: number }
+        Returns: Json
+      }
+      gram_admin_upsert_task_for_telegram: {
+        Args: {
+          _link: string
+          _reward_amount: number
+          _reward_type: string
+          _task_id: string
+          _task_type: string
+          _telegram_id: number
+          _title: string
+        }
+        Returns: Json
+      }
+      gram_ai_activate_plan: {
+        Args: { _plan: string; _price: number; _profile_id: string }
+        Returns: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          images_used: number
+          period_start: string
+          plan: string
+          profile_id: string
+          status: string
+          updated_at: string
+          videos_used: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "gram_ai_subscriptions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      gram_ai_activate_plan_with_intent: {
+        Args: {
+          _intent_id: string
+          _plan: string
+          _profile_id: string
+          _telegram_id: number
+        }
+        Returns: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          images_used: number
+          period_start: string
+          plan: string
+          profile_id: string
+          status: string
+          updated_at: string
+          videos_used: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "gram_ai_subscriptions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      gram_ai_get_subscription: {
+        Args: { _profile_id: string }
+        Returns: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          images_used: number
+          period_start: string
+          plan: string
+          profile_id: string
+          status: string
+          updated_at: string
+          videos_used: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "gram_ai_subscriptions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      gram_attach_referral_for_telegram: {
+        Args: { _code: string; _telegram_id: number }
+        Returns: Json
+      }
+      gram_complete_task_for_telegram: {
+        Args: { _task_id: string; _telegram_id: number }
+        Returns: Json
+      }
+      gram_consume_ton_intent: {
+        Args: { _action: string; _intent_id: string; _telegram_id: number }
+        Returns: number
+      }
+      gram_create_smart_offer_for_telegram: {
+        Args: { _surface?: string; _telegram_id: number }
+        Returns: Json
+      }
+      gram_credit_ton_deposit_with_intent: {
+        Args: {
+          _intent_id: string
+          _telegram_id: number
+          _wallet_address?: string
+        }
+        Returns: Json
+      }
+      gram_expire_prize_rewards: { Args: never; Returns: number }
+      gram_game_crash_cashout: {
+        Args: { _at: number; _bet_id: string; _telegram_id: number }
+        Returns: Json
+      }
+      gram_game_crash_history: {
+        Args: { _limit?: number }
+        Returns: {
+          crash_multiplier: number
+          round_id: number
+        }[]
+      }
+      gram_game_crash_players: {
+        Args: { _exclude?: number; _limit?: number; _round: number }
+        Returns: {
+          name: string
+          photo_url: string
+        }[]
+      }
+      gram_game_crash_round_result: {
+        Args: { _round_id: number }
+        Returns: number
+      }
+      gram_game_crash_start:
+        | { Args: { _stake: number; _telegram_id: number }; Returns: Json }
+        | {
+            Args: { _round_id?: number; _stake: number; _telegram_id: number }
+            Returns: Json
+          }
+      gram_game_create_own_profile: {
+        Args: {
+          _first_name: string
+          _last_name: string
+          _photo_url: string
+          _telegram_id: number
+          _username: string
+        }
+        Returns: Json
+      }
+      gram_game_create_transaction: {
+        Args: {
+          _amount: number
+          _currency: string
+          _status?: string
+          _telegram_id: number
+          _tx_hash?: string
+          _type: string
+          _wallet_address: string
+        }
+        Returns: Json
+      }
+      gram_game_credit_referral: {
+        Args: { _source: string; _ton_paid: number; _user_id: string }
+        Returns: number
+      }
+      gram_game_get_own_profile: {
+        Args: { _telegram_id: number }
+        Returns: Json
+      }
+      gram_game_is_wallet_verified: {
+        Args: { _telegram_id: number }
+        Returns: boolean
+      }
+      gram_game_place_bet_for_telegram: {
+        Args: { _game_slug: string; _stake: number; _telegram_id: number }
+        Returns: Json
+      }
+      gram_game_play_round: {
+        Args: {
+          _game_slug: string
+          _params?: Json
+          _stake: number
+          _telegram_id: number
+        }
+        Returns: Json
+      }
+      gram_game_profile_id: { Args: { _telegram_id: number }; Returns: string }
+      gram_game_public_profiles: {
+        Args: { _ids: string[] }
+        Returns: {
+          first_name: string
+          id: string
+          photo_url: string
+          username: string
+        }[]
+      }
+      gram_game_settle_bet_for_telegram: {
+        Args: { _bet_id: string; _telegram_id: number; _won: boolean }
+        Returns: Json
+      }
+      gram_get_battle_inventory_for_telegram: {
+        Args: { _telegram_id: number }
+        Returns: Json
+      }
+      gram_get_payment_discount_for_telegram: {
+        Args: { _telegram_id: number }
+        Returns: Json
+      }
+      gram_get_referral_summary_for_telegram: {
+        Args: { _telegram_id: number }
+        Returns: Json
+      }
+      gram_grant_welcome_prize: {
+        Args: { _telegram_id: number }
+        Returns: Json
+      }
+      gram_inv_invest_claim_for_telegram: {
+        Args: { _investment_id: string; _telegram_id: number }
+        Returns: Json
+      }
+      gram_inv_invest_create_for_telegram: {
+        Args: { _amount: number; _plan_id: string; _telegram_id: number }
+        Returns: Json
+      }
+      gram_inv_invest_overview_for_telegram: {
+        Args: { _telegram_id: number }
+        Returns: Json
+      }
+      gram_inv_invest_withdraw_for_telegram: {
+        Args: { _investment_id: string; _telegram_id: number }
+        Returns: Json
+      }
       gram_invest_claim_for_telegram: {
         Args: { _investment_id: string; _telegram_id: number }
         Returns: Json
@@ -12950,15 +14282,130 @@ export type Database = {
         Args: { _investment_id: string; _telegram_id: number }
         Returns: Json
       }
-      grant_crypto_plan: {
+      gram_is_telegram_admin: {
+        Args: { _telegram_id: number }
+        Returns: boolean
+      }
+      gram_next_prize_broadcast_targets: {
+        Args: { _limit: number }
+        Returns: {
+          first_name: string
+          id: string
+          telegram_id: number
+        }[]
+      }
+      gram_nft_mining_power_for_telegram: {
+        Args: { _telegram_id: number }
+        Returns: Json
+      }
+      gram_perform_attack_for_telegram: {
         Args: {
-          p_provider: string
-          p_raw?: Json
-          p_reference: string
-          p_secret: string
+          _attack_type?: string
+          _package_key?: string
+          _telegram_id: number
         }
         Returns: Json
       }
+      gram_purchase_battle_item_for_telegram: {
+        Args: {
+          _category: string
+          _package_key: string
+          _package_name: string
+          _quantity: number
+          _telegram_id: number
+          _ton_paid: number
+          _tx_hash?: string
+          _wallet_address?: string
+        }
+        Returns: Json
+      }
+      gram_purchase_server_for_telegram: {
+        Args: {
+          _server_id: string
+          _telegram_id: number
+          _ton_paid: number
+          _tx_hash?: string
+          _wallet_address?: string
+        }
+        Returns: Json
+      }
+      gram_pvp_buy_character: {
+        Args: {
+          _character_key: string
+          _telegram_id: number
+          _ton_paid: number
+          _tx_hash: string
+        }
+        Returns: Json
+      }
+      gram_pvp_equip_character: {
+        Args: { _character_key: string; _telegram_id: number }
+        Returns: Json
+      }
+      gram_pvp_find_or_create_match: {
+        Args: { _mode?: string; _telegram_id: number; _weapon_key?: string }
+        Returns: Json
+      }
+      gram_pvp_finish_match: {
+        Args: { _match_id: string; _telegram_id: number }
+        Returns: Json
+      }
+      gram_pvp_get_characters: { Args: { _telegram_id: number }; Returns: Json }
+      gram_pvp_leaderboard: { Args: { _limit?: number }; Returns: Json }
+      gram_pvp_set_match_character: {
+        Args: {
+          _character_key: string
+          _match_id: string
+          _telegram_id: number
+        }
+        Returns: Json
+      }
+      gram_request_withdrawal_for_telegram: {
+        Args: {
+          _amount: number
+          _currency: string
+          _telegram_id: number
+          _wallet_address?: string
+        }
+        Returns: Json
+      }
+      gram_staking_claim_for_telegram: {
+        Args: { _stake_id: string; _telegram_id: number }
+        Returns: Json
+      }
+      gram_staking_create_for_telegram: {
+        Args: { _amount: number; _plan_id: string; _telegram_id: number }
+        Returns: Json
+      }
+      gram_staking_get_overview_for_telegram: {
+        Args: { _telegram_id: number }
+        Returns: Json
+      }
+      gram_staking_unstake_for_telegram: {
+        Args: { _stake_id: string; _telegram_id: number }
+        Returns: Json
+      }
+      gram_start_mining_for_telegram: {
+        Args: { _telegram_id: number }
+        Returns: Json
+      }
+      gram_sync_mining_for_telegram: {
+        Args: { _telegram_id: number }
+        Returns: Json
+      }
+      gram_tg_fulfill_payment: {
+        Args: { p_external_id: string; p_payment_id: string; p_raw?: Json }
+        Returns: Json
+      }
+      gram_verify_wallet_with_intent: {
+        Args: {
+          _intent_id: string
+          _telegram_id: number
+          _wallet_address?: string
+        }
+        Returns: Json
+      }
+      grant_prize_to_all: { Args: never; Returns: Json }
       grant_user_credits: {
         Args: {
           p_action_type: string
@@ -13123,17 +14570,6 @@ export type Database = {
         Args: { _telegram_id: number }
         Returns: Json
       }
-      orders_by_phone: {
-        Args: { p_phone: string }
-        Returns: {
-          created_at: string
-          customer_name: string
-          governorate: string
-          order_number: number
-          status: string
-          total: number
-        }[]
-      }
       owns_conversation: {
         Args: { p_conversation_id: string }
         Returns: boolean
@@ -13160,38 +14596,6 @@ export type Database = {
           id: string
         }[]
       }
-      place_order:
-        | {
-            Args: {
-              p_address: string
-              p_affiliate_code: string
-              p_customer_name: string
-              p_governorate: string
-              p_items: Json
-              p_notes: string
-              p_phone: string
-              p_shipping_fee: number
-              p_subtotal: number
-              p_total: number
-            }
-            Returns: number
-          }
-        | {
-            Args: {
-              p_address: string
-              p_affiliate_code: string
-              p_customer_name: string
-              p_governorate: string
-              p_items: Json
-              p_notes: string
-              p_phone: string
-              p_shipping_fee: number
-              p_store_id?: string
-              p_subtotal: number
-              p_total: number
-            }
-            Returns: number
-          }
       process_polar_order: {
         Args: {
           p_credits: number
@@ -13215,12 +14619,33 @@ export type Database = {
         }
         Returns: Json
       }
+      purchase_battle_item_with_intent: {
+        Args: {
+          _category: string
+          _intent_id: string
+          _package_key: string
+          _package_name: string
+          _quantity: number
+          _telegram_id: number
+          _wallet_address?: string
+        }
+        Returns: Json
+      }
       purchase_server_for_telegram: {
         Args: {
           _server_id: string
           _telegram_id: number
           _ton_paid: number
           _tx_hash?: string
+          _wallet_address?: string
+        }
+        Returns: Json
+      }
+      purchase_server_with_intent: {
+        Args: {
+          _intent_id: string
+          _server_id: string
+          _telegram_id: number
           _wallet_address?: string
         }
         Returns: Json
@@ -13301,6 +14726,15 @@ export type Database = {
         }
         Returns: string
       }
+      request_withdrawal_for_telegram: {
+        Args: {
+          _amount: number
+          _currency: string
+          _telegram_id: number
+          _wallet_address?: string
+        }
+        Returns: Json
+      }
       search_attachment_chunks: {
         Args: {
           p_conversation_id: string
@@ -13377,17 +14811,6 @@ export type Database = {
         Args: { p_external_id: string; p_payment_id: string; p_raw?: Json }
         Returns: Json
       }
-      track_order: {
-        Args: { p_order_number: number; p_phone: string }
-        Returns: {
-          created_at: string
-          customer_name: string
-          governorate: string
-          order_number: number
-          status: string
-          total: number
-        }[]
-      }
       update_profile_safe: {
         Args: {
           p_avatar_url?: string
@@ -13398,6 +14821,14 @@ export type Database = {
         Returns: undefined
       }
       verify_external_api_key: { Args: { p_key_hash: string }; Returns: string }
+      verify_wallet_with_intent: {
+        Args: {
+          _intent_id: string
+          _telegram_id: number
+          _wallet_address?: string
+        }
+        Returns: Json
+      }
       watchdog_resume_background: { Args: never; Returns: number }
       watchdog_resume_operator: { Args: never; Returns: undefined }
       watchdog_resume_research: { Args: never; Returns: number }
