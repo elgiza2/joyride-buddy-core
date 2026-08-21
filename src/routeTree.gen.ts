@@ -23,6 +23,7 @@ import { Route as ApiPublicTasksRouteImport } from './routes/api/public/tasks'
 import { Route as ApiPublicTonVerifyRouteImport } from './routes/api/public/ton-verify'
 import { Route as ApiPublicTonconnectManifestRouteImport } from './routes/api/public/tonconnect-manifest'
 import { Route as ApiTelegramInvoiceRouteImport } from './routes/api/telegram/invoice'
+import { Route as ApiPublicAiComposeRouteImport } from './routes/api/public/ai/compose'
 import { Route as ApiPublicTelegramCronRouteImport } from './routes/api/public/telegram/cron'
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/public/telegram/webhook'
 
@@ -97,6 +98,11 @@ const ApiTelegramInvoiceRoute = ApiTelegramInvoiceRouteImport.update({
   path: '/api/telegram/invoice',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicAiComposeRoute = ApiPublicAiComposeRouteImport.update({
+  id: '/api/public/ai/compose',
+  path: '/api/public/ai/compose',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicTelegramCronRoute = ApiPublicTelegramCronRouteImport.update({
   id: '/api/public/telegram/cron',
   path: '/api/public/telegram/cron',
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/api/public/ton-verify': typeof ApiPublicTonVerifyRoute
   '/api/public/tonconnect-manifest': typeof ApiPublicTonconnectManifestRoute
   '/api/telegram/invoice': typeof ApiTelegramInvoiceRoute
+  '/api/public/ai/compose': typeof ApiPublicAiComposeRoute
   '/api/public/telegram/cron': typeof ApiPublicTelegramCronRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/api/public/ton-verify': typeof ApiPublicTonVerifyRoute
   '/api/public/tonconnect-manifest': typeof ApiPublicTonconnectManifestRoute
   '/api/telegram/invoice': typeof ApiTelegramInvoiceRoute
+  '/api/public/ai/compose': typeof ApiPublicAiComposeRoute
   '/api/public/telegram/cron': typeof ApiPublicTelegramCronRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/api/public/ton-verify': typeof ApiPublicTonVerifyRoute
   '/api/public/tonconnect-manifest': typeof ApiPublicTonconnectManifestRoute
   '/api/telegram/invoice': typeof ApiTelegramInvoiceRoute
+  '/api/public/ai/compose': typeof ApiPublicAiComposeRoute
   '/api/public/telegram/cron': typeof ApiPublicTelegramCronRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/api/public/ton-verify'
     | '/api/public/tonconnect-manifest'
     | '/api/telegram/invoice'
+    | '/api/public/ai/compose'
     | '/api/public/telegram/cron'
     | '/api/public/telegram/webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/api/public/ton-verify'
     | '/api/public/tonconnect-manifest'
     | '/api/telegram/invoice'
+    | '/api/public/ai/compose'
     | '/api/public/telegram/cron'
     | '/api/public/telegram/webhook'
   id:
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/api/public/ton-verify'
     | '/api/public/tonconnect-manifest'
     | '/api/telegram/invoice'
+    | '/api/public/ai/compose'
     | '/api/public/telegram/cron'
     | '/api/public/telegram/webhook'
   fileRoutesById: FileRoutesById
@@ -236,6 +248,7 @@ export interface RootRouteChildren {
   ApiPublicTonVerifyRoute: typeof ApiPublicTonVerifyRoute
   ApiPublicTonconnectManifestRoute: typeof ApiPublicTonconnectManifestRoute
   ApiTelegramInvoiceRoute: typeof ApiTelegramInvoiceRoute
+  ApiPublicAiComposeRoute: typeof ApiPublicAiComposeRoute
   ApiPublicTelegramCronRoute: typeof ApiPublicTelegramCronRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
 }
@@ -340,6 +353,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiTelegramInvoiceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/ai/compose': {
+      id: '/api/public/ai/compose'
+      path: '/api/public/ai/compose'
+      fullPath: '/api/public/ai/compose'
+      preLoaderRoute: typeof ApiPublicAiComposeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/telegram/cron': {
       id: '/api/public/telegram/cron'
       path: '/api/public/telegram/cron'
@@ -372,6 +392,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicTonVerifyRoute: ApiPublicTonVerifyRoute,
   ApiPublicTonconnectManifestRoute: ApiPublicTonconnectManifestRoute,
   ApiTelegramInvoiceRoute: ApiTelegramInvoiceRoute,
+  ApiPublicAiComposeRoute: ApiPublicAiComposeRoute,
   ApiPublicTelegramCronRoute: ApiPublicTelegramCronRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
 }
