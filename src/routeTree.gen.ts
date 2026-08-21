@@ -18,6 +18,7 @@ import { Route as ApiAiComposeRouteImport } from './routes/api/ai/compose'
 import { Route as ApiAiCoverRouteImport } from './routes/api/ai/cover'
 import { Route as ApiAiVocalsRouteImport } from './routes/api/ai/vocals'
 import { Route as ApiPublicConfigRouteImport } from './routes/api/public/config'
+import { Route as ApiPublicPricesRouteImport } from './routes/api/public/prices'
 import { Route as ApiPublicTonconnectManifestRouteImport } from './routes/api/public/tonconnect-manifest'
 import { Route as ApiTelegramInvoiceRouteImport } from './routes/api/telegram/invoice'
 import { Route as ApiPublicTelegramCronRouteImport } from './routes/api/public/telegram/cron'
@@ -68,6 +69,11 @@ const ApiPublicConfigRoute = ApiPublicConfigRouteImport.update({
   path: '/api/public/config',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPricesRoute = ApiPublicPricesRouteImport.update({
+  id: '/api/public/prices',
+  path: '/api/public/prices',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicTonconnectManifestRoute =
   ApiPublicTonconnectManifestRouteImport.update({
     id: '/api/public/tonconnect-manifest',
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/api/ai/cover': typeof ApiAiCoverRoute
   '/api/ai/vocals': typeof ApiAiVocalsRoute
   '/api/public/config': typeof ApiPublicConfigRoute
+  '/api/public/prices': typeof ApiPublicPricesRoute
   '/api/public/tonconnect-manifest': typeof ApiPublicTonconnectManifestRoute
   '/api/telegram/invoice': typeof ApiTelegramInvoiceRoute
   '/api/public/telegram/cron': typeof ApiPublicTelegramCronRoute
@@ -116,6 +123,7 @@ export interface FileRoutesByTo {
   '/api/ai/cover': typeof ApiAiCoverRoute
   '/api/ai/vocals': typeof ApiAiVocalsRoute
   '/api/public/config': typeof ApiPublicConfigRoute
+  '/api/public/prices': typeof ApiPublicPricesRoute
   '/api/public/tonconnect-manifest': typeof ApiPublicTonconnectManifestRoute
   '/api/telegram/invoice': typeof ApiTelegramInvoiceRoute
   '/api/public/telegram/cron': typeof ApiPublicTelegramCronRoute
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/api/ai/cover': typeof ApiAiCoverRoute
   '/api/ai/vocals': typeof ApiAiVocalsRoute
   '/api/public/config': typeof ApiPublicConfigRoute
+  '/api/public/prices': typeof ApiPublicPricesRoute
   '/api/public/tonconnect-manifest': typeof ApiPublicTonconnectManifestRoute
   '/api/telegram/invoice': typeof ApiTelegramInvoiceRoute
   '/api/public/telegram/cron': typeof ApiPublicTelegramCronRoute
@@ -149,6 +158,7 @@ export interface FileRouteTypes {
     | '/api/ai/cover'
     | '/api/ai/vocals'
     | '/api/public/config'
+    | '/api/public/prices'
     | '/api/public/tonconnect-manifest'
     | '/api/telegram/invoice'
     | '/api/public/telegram/cron'
@@ -164,6 +174,7 @@ export interface FileRouteTypes {
     | '/api/ai/cover'
     | '/api/ai/vocals'
     | '/api/public/config'
+    | '/api/public/prices'
     | '/api/public/tonconnect-manifest'
     | '/api/telegram/invoice'
     | '/api/public/telegram/cron'
@@ -179,6 +190,7 @@ export interface FileRouteTypes {
     | '/api/ai/cover'
     | '/api/ai/vocals'
     | '/api/public/config'
+    | '/api/public/prices'
     | '/api/public/tonconnect-manifest'
     | '/api/telegram/invoice'
     | '/api/public/telegram/cron'
@@ -195,6 +207,7 @@ export interface RootRouteChildren {
   ApiAiCoverRoute: typeof ApiAiCoverRoute
   ApiAiVocalsRoute: typeof ApiAiVocalsRoute
   ApiPublicConfigRoute: typeof ApiPublicConfigRoute
+  ApiPublicPricesRoute: typeof ApiPublicPricesRoute
   ApiPublicTonconnectManifestRoute: typeof ApiPublicTonconnectManifestRoute
   ApiTelegramInvoiceRoute: typeof ApiTelegramInvoiceRoute
   ApiPublicTelegramCronRoute: typeof ApiPublicTelegramCronRoute
@@ -266,6 +279,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicConfigRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/prices': {
+      id: '/api/public/prices'
+      path: '/api/public/prices'
+      fullPath: '/api/public/prices'
+      preLoaderRoute: typeof ApiPublicPricesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/tonconnect-manifest': {
       id: '/api/public/tonconnect-manifest'
       path: '/api/public/tonconnect-manifest'
@@ -307,6 +327,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAiCoverRoute: ApiAiCoverRoute,
   ApiAiVocalsRoute: ApiAiVocalsRoute,
   ApiPublicConfigRoute: ApiPublicConfigRoute,
+  ApiPublicPricesRoute: ApiPublicPricesRoute,
   ApiPublicTonconnectManifestRoute: ApiPublicTonconnectManifestRoute,
   ApiTelegramInvoiceRoute: ApiTelegramInvoiceRoute,
   ApiPublicTelegramCronRoute: ApiPublicTelegramCronRoute,
