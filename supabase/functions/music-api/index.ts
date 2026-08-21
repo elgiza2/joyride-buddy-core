@@ -205,9 +205,19 @@ Deno.serve(async (req) => {
         return json({ ok: true, type: "successful_payment" });
       }
       if (body?.message?.text === "/start") {
-        await musicWebhookTelegram("sendMessage", {
+        const photo = "https://music.megsyai.com/music-start.jpg";
+        const caption = "*Music AI*\n\nMine MUSIC, GRAM and USDT from your own AI studio.";
+        await musicWebhookTelegram("sendPhoto", {
           chat_id: body.message.chat.id,
-          text: "Welcome to Music AI. You can complete Stars purchases from the app.",
+          photo,
+          caption,
+          parse_mode: "Markdown",
+          reply_markup: {
+            inline_keyboard: [[
+              { text: "فتح التطبيق", url: "http://t.me/Mosuclbot/App" },
+              { text: "المجتمع", url: "https://t.me/muscox" },
+            ]],
+          },
         });
         return json({ ok: true, type: "start" });
       }
