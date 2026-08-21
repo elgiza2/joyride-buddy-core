@@ -25,6 +25,7 @@ import { Route as ApiPublicTonconnectManifestRouteImport } from './routes/api/pu
 import { Route as ApiTelegramInvoiceRouteImport } from './routes/api/telegram/invoice'
 import { Route as ApiPublicAiComposeRouteImport } from './routes/api/public/ai/compose'
 import { Route as ApiPublicAiCoverRouteImport } from './routes/api/public/ai/cover'
+import { Route as ApiPublicAiVocalsRouteImport } from './routes/api/public/ai/vocals'
 import { Route as ApiPublicTelegramCronRouteImport } from './routes/api/public/telegram/cron'
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/public/telegram/webhook'
 
@@ -109,6 +110,11 @@ const ApiPublicAiCoverRoute = ApiPublicAiCoverRouteImport.update({
   path: '/api/public/ai/cover',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicAiVocalsRoute = ApiPublicAiVocalsRouteImport.update({
+  id: '/api/public/ai/vocals',
+  path: '/api/public/ai/vocals',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicTelegramCronRoute = ApiPublicTelegramCronRouteImport.update({
   id: '/api/public/telegram/cron',
   path: '/api/public/telegram/cron',
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/api/telegram/invoice': typeof ApiTelegramInvoiceRoute
   '/api/public/ai/compose': typeof ApiPublicAiComposeRoute
   '/api/public/ai/cover': typeof ApiPublicAiCoverRoute
+  '/api/public/ai/vocals': typeof ApiPublicAiVocalsRoute
   '/api/public/telegram/cron': typeof ApiPublicTelegramCronRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
@@ -158,6 +165,7 @@ export interface FileRoutesByTo {
   '/api/telegram/invoice': typeof ApiTelegramInvoiceRoute
   '/api/public/ai/compose': typeof ApiPublicAiComposeRoute
   '/api/public/ai/cover': typeof ApiPublicAiCoverRoute
+  '/api/public/ai/vocals': typeof ApiPublicAiVocalsRoute
   '/api/public/telegram/cron': typeof ApiPublicTelegramCronRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/api/telegram/invoice': typeof ApiTelegramInvoiceRoute
   '/api/public/ai/compose': typeof ApiPublicAiComposeRoute
   '/api/public/ai/cover': typeof ApiPublicAiCoverRoute
+  '/api/public/ai/vocals': typeof ApiPublicAiVocalsRoute
   '/api/public/telegram/cron': typeof ApiPublicTelegramCronRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
@@ -201,6 +210,7 @@ export interface FileRouteTypes {
     | '/api/telegram/invoice'
     | '/api/public/ai/compose'
     | '/api/public/ai/cover'
+    | '/api/public/ai/vocals'
     | '/api/public/telegram/cron'
     | '/api/public/telegram/webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -221,6 +231,7 @@ export interface FileRouteTypes {
     | '/api/telegram/invoice'
     | '/api/public/ai/compose'
     | '/api/public/ai/cover'
+    | '/api/public/ai/vocals'
     | '/api/public/telegram/cron'
     | '/api/public/telegram/webhook'
   id:
@@ -241,6 +252,7 @@ export interface FileRouteTypes {
     | '/api/telegram/invoice'
     | '/api/public/ai/compose'
     | '/api/public/ai/cover'
+    | '/api/public/ai/vocals'
     | '/api/public/telegram/cron'
     | '/api/public/telegram/webhook'
   fileRoutesById: FileRoutesById
@@ -262,6 +274,7 @@ export interface RootRouteChildren {
   ApiTelegramInvoiceRoute: typeof ApiTelegramInvoiceRoute
   ApiPublicAiComposeRoute: typeof ApiPublicAiComposeRoute
   ApiPublicAiCoverRoute: typeof ApiPublicAiCoverRoute
+  ApiPublicAiVocalsRoute: typeof ApiPublicAiVocalsRoute
   ApiPublicTelegramCronRoute: typeof ApiPublicTelegramCronRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
 }
@@ -380,6 +393,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAiCoverRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/ai/vocals': {
+      id: '/api/public/ai/vocals'
+      path: '/api/public/ai/vocals'
+      fullPath: '/api/public/ai/vocals'
+      preLoaderRoute: typeof ApiPublicAiVocalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/telegram/cron': {
       id: '/api/public/telegram/cron'
       path: '/api/public/telegram/cron'
@@ -414,6 +434,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiTelegramInvoiceRoute: ApiTelegramInvoiceRoute,
   ApiPublicAiComposeRoute: ApiPublicAiComposeRoute,
   ApiPublicAiCoverRoute: ApiPublicAiCoverRoute,
+  ApiPublicAiVocalsRoute: ApiPublicAiVocalsRoute,
   ApiPublicTelegramCronRoute: ApiPublicTelegramCronRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
 }
