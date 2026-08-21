@@ -23,7 +23,7 @@ export async function listTasks(input: { data: { playerKey: string } }): Promise
 
 /** Marks a task complete. Telegram tasks are verified against real membership. */
 export async function completeTask(input: {
-  data: { playerKey: string; taskId: string; telegramId?: number };
+  data: { playerKey: string; taskId: string; telegramId?: number | undefined };
 }): Promise<{ ok: boolean; reward?: number; error?: string }> {
   return apiPost<{ ok: boolean; reward?: number; error?: string }>(PATH, {
     action: "complete",
