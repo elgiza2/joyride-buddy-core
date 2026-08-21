@@ -1,20 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { corsHeaders, corsJson, corsPreflight } from "@/lib/cors";
 
 /** Sings the generated lyrics and streams back an MP3 vocal take. */
-export const Route = createFileRoute("/api/ai/vocals")({
+export const Route = createFileRoute("/api/public/ai/vocals")({
   server: {
     handlers: {
+      OPTIONS: async () => corsPreflight(),
       POST: async ({ request }) => {
         const key = process.env["LOVABLE_API_KEY"];
-        if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
+        if (!key) return corsJson({ error: "Missing LOVABLE_API_KEY" }, 500);
 
-        const { lyrics, mood, voice } = (await request.json()) as {
+        const { lyrics, mood, voice } = (await request.json().catch(() => ({}))) as {
           lyrics?: string[];
           mood?: string;
           voice?: string;
         };
         const text = (lyrics ?? []).join("\n").slice(0, 1800);
-        if (!text.trim()) return Response.json({ error: "No lyrics" }, { status: 400 });
+        if (!text.trim()) return corsJson({ error: "No lyrics" }, 400);
 
         const res = await fetch("https://ai.gateway.lovable.dev/v1/audio/speech", {
           method: "POST",
@@ -33,11 +35,11 @@ export const Route = createFileRoute("/api/ai/vocals")({
         if (!res.ok || !res.body) {
           const body = await res.text().catch(() => "");
           console.error(`Vocals failed [${res.status}]: ${body}`);
-          return Response.json({ error: body || "Vocal take failed" }, { status: res.status });
+          return corsJson({ error: body || "Vocal take failed" }, res.status);
         }
 
         return new Response(res.body, {
-          headers: { "content-type": "audio/mpeg", "cache-control": "no-store" },
+          headers: { "content-type": "audio/mpeg", "cache-control": "no-store", ...corsHeaders },
         });
       },
     },

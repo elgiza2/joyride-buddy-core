@@ -1,3 +1,4 @@
+import { apiUrl } from "@/lib/api";
 import { createFileRoute } from "@tanstack/react-router";
 import { Suspense, lazy, useState } from "react";
 import { Check, Loader2, Lock, Star } from "lucide-react";
@@ -79,7 +80,7 @@ function NftsTab() {
   const payStars = async (nftId: string, name: string) => {
     setBusy(nftId);
     try {
-      const res = await fetch("/api/telegram/invoice", {
+      const res = await fetch(apiUrl("/api/public/telegram/invoice"), {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ itemId: "nft", nftId }),

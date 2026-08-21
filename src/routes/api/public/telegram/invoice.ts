@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { INSTRUMENTS, MINERS, minerUpgradeCost, starsForCost, upgradeCost } from "@/lib/game";
 import { PLANS } from "@/lib/plans";
 import { NFTS } from "@/lib/nfts";
+import { corsJson, corsPreflight } from "@/lib/cors";
 
 const ITEMS: Record<string, { title: string; desc: string; stars: number }> = {
   premium: { title: "Premium Pass — 30 days", desc: "2x mining, 24h storage, 5 AI tracks/day", stars: 250 },
@@ -14,17 +15,18 @@ const ITEMS: Record<string, { title: string; desc: string; stars: number }> = {
 };
 
 /** Creates a Telegram Stars invoice link (XTR) for a shop item. */
-export const Route = createFileRoute("/api/telegram/invoice")({
+export const Route = createFileRoute("/api/public/telegram/invoice")({
   server: {
     handlers: {
+      OPTIONS: async () => corsPreflight(),
       POST: async ({ request }) => {
         const token =
           process.env["TELEGRAM_STARS_BOT_TOKEN"] ?? process.env["MUSIC_TELEGRAM_BOT_TOKEN"];
         if (!token) {
-          return Response.json({ error: "TELEGRAM_STARS_BOT_TOKEN is not configured" }, { status: 503 });
+          return corsJson({ error: "TELEGRAM_STARS_BOT_TOKEN is not configured" }, 503);
         }
 
-        const body = (await request.json()) as {
+        const body = (await request.json().catch(() => ({}))) as {
           itemId?: string;
           upgradeKind?: "instrument" | "miner";
           upgradeId?: string;
@@ -80,7 +82,7 @@ export const Route = createFileRoute("/api/telegram/invoice")({
             }
           }
         }
-        if (!item) return Response.json({ error: "Unknown item" }, { status: 400 });
+        if (!item) return corsJson({ error: "Unknown item" }, 400);
 
         const res = await fetch(`https://api.telegram.org/bot${token}/createInvoiceLink`, {
           method: "POST",
@@ -96,9 +98,9 @@ export const Route = createFileRoute("/api/telegram/invoice")({
 
         const data = (await res.json()) as { ok: boolean; result?: string; description?: string };
         if (!data.ok || !data.result) {
-          return Response.json({ error: data.description ?? "Telegram error" }, { status: 502 });
+          return corsJson({ error: data.description ?? "Telegram error" }, 502);
         }
-        return Response.json({ link: data.result });
+        return corsJson({ link: data.result });
       },
     },
   },

@@ -1,3 +1,4 @@
+import { apiUrl } from "@/lib/api";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { HelpCircle, Mic, Music2, Play, Square, Trash2 } from "lucide-react";
@@ -133,7 +134,7 @@ function AiPage() {
     });
     try {
       setStep(mode === "voice" ? "Building your backing track..." : "Composing...");
-      const res = await fetch("/api/ai/compose", {
+      const res = await fetch(apiUrl("/api/public/ai/compose"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: brief }),
@@ -148,7 +149,7 @@ function AiPage() {
       setStep("Painting the cover...");
       let coverUrl: string | null = null;
       try {
-        const coverRes = await fetch("/api/ai/cover", {
+        const coverRes = await fetch(apiUrl("/api/public/ai/cover"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ prompt: `${composition.genre}, ${composition.mood}, ${brief}` }),
@@ -167,7 +168,7 @@ function AiPage() {
       if (!audio && lyrics && lyrics.length > 0) {
         setStep("Recording the vocals...");
         try {
-          const vocalRes = await fetch("/api/ai/vocals", {
+          const vocalRes = await fetch(apiUrl("/api/public/ai/vocals"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ lyrics, mood: composition.mood }),

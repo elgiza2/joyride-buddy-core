@@ -1,3 +1,4 @@
+import { apiUrl } from "@/lib/api";
 import { useState } from "react";
 import { Check, Loader2, Star } from "lucide-react";
 import { toast } from "sonner";
@@ -19,7 +20,7 @@ export function StorePanel() {
     const key = `${plan.id}-stars`;
     setBusy(key);
     try {
-      const res = await fetch("/api/telegram/invoice", {
+      const res = await fetch(apiUrl("/api/public/telegram/invoice"), {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ itemId: "plan", planId: plan.id }),

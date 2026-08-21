@@ -1,13 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { corsJson, corsPreflight } from "@/lib/cors";
 
 /** Public, non-secret client config (ad block id). */
 export const Route = createFileRoute("/api/public/config")({
   server: {
     handlers: {
-      GET: async () =>
-        Response.json({
-          adsgramBlockId: process.env["ADSGRAM_BLOCK_ID"] ?? "43800",
-        }),
+      OPTIONS: async () => corsPreflight(),
+      GET: async () => corsJson({ adsgramBlockId: process.env["ADSGRAM_BLOCK_ID"] ?? "43800" }),
     },
   },
 });

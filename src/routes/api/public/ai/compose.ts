@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { corsJson, corsPreflight } from "@/lib/cors";
 
 const SYSTEM = `You are a songwriter and composer inside the Music AI app.
 From the user's brief, write a REAL short song: it must have sung lyrics, not just music.
@@ -10,16 +11,17 @@ Rules: 4-8 chords, 8-32 MIDI notes between 55 and 88 (0 = rest), bpm 70-150,
 8-14 lyric lines that rhyme and fit the mood, written in the same language as the brief.
 No text outside the JSON.`;
 
-export const Route = createFileRoute("/api/ai/compose")({
+export const Route = createFileRoute("/api/public/ai/compose")({
   server: {
     handlers: {
+      OPTIONS: async () => corsPreflight(),
       POST: async ({ request }) => {
         const key = process.env["LOVABLE_API_KEY"];
-        if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
+        if (!key) return corsJson({ error: "Missing LOVABLE_API_KEY" }, 500);
 
-        const { prompt } = (await request.json()) as { prompt?: string };
+        const { prompt } = (await request.json().catch(() => ({}))) as { prompt?: string };
         if (!prompt || prompt.length > 400) {
-          return Response.json({ error: "Invalid description" }, { status: 400 });
+          return corsJson({ error: "Invalid description" }, 400);
         }
 
         const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -37,13 +39,13 @@ export const Route = createFileRoute("/api/ai/compose")({
         if (!res.ok) {
           const body = await res.text();
           console.error(`Compose failed [${res.status}]: ${body}`);
-          return Response.json({ error: body }, { status: res.status });
+          return corsJson({ error: body }, res.status);
         }
 
         const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
         const raw = json.choices?.[0]?.message?.content ?? "";
         const match = raw.match(/\{[\s\S]*\}/);
-        if (!match) return Response.json({ error: "Could not compose the song" }, { status: 502 });
+        if (!match) return corsJson({ error: "Could not compose the song" }, 502);
 
         try {
           const comp = JSON.parse(match[0]) as Record<string, unknown>;
@@ -51,7 +53,7 @@ export const Route = createFileRoute("/api/ai/compose")({
             .slice(0, 16)
             .map((l) => String(l).slice(0, 120))
             .filter(Boolean);
-          return Response.json({
+          return corsJson({
             title: String(comp["title"] ?? "Untitled").slice(0, 60),
             genre: String(comp["genre"] ?? "Lo-Fi").slice(0, 40),
             mood: String(comp["mood"] ?? "calm").slice(0, 40),
@@ -71,7 +73,7 @@ export const Route = createFileRoute("/api/ai/compose")({
             description: String(comp["description"] ?? "").slice(0, 160),
           });
         } catch {
-          return Response.json({ error: "Could not read the song" }, { status: 502 });
+          return corsJson({ error: "Could not read the song" }, 502);
         }
       },
     },
