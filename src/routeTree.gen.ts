@@ -19,6 +19,7 @@ import { Route as ApiAiCoverRouteImport } from './routes/api/ai/cover'
 import { Route as ApiAiVocalsRouteImport } from './routes/api/ai/vocals'
 import { Route as ApiPublicConfigRouteImport } from './routes/api/public/config'
 import { Route as ApiPublicPricesRouteImport } from './routes/api/public/prices'
+import { Route as ApiPublicTasksRouteImport } from './routes/api/public/tasks'
 import { Route as ApiPublicTonVerifyRouteImport } from './routes/api/public/ton-verify'
 import { Route as ApiPublicTonconnectManifestRouteImport } from './routes/api/public/tonconnect-manifest'
 import { Route as ApiTelegramInvoiceRouteImport } from './routes/api/telegram/invoice'
@@ -75,6 +76,11 @@ const ApiPublicPricesRoute = ApiPublicPricesRouteImport.update({
   path: '/api/public/prices',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicTasksRoute = ApiPublicTasksRouteImport.update({
+  id: '/api/public/tasks',
+  path: '/api/public/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicTonVerifyRoute = ApiPublicTonVerifyRouteImport.update({
   id: '/api/public/ton-verify',
   path: '/api/public/ton-verify',
@@ -114,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/api/ai/vocals': typeof ApiAiVocalsRoute
   '/api/public/config': typeof ApiPublicConfigRoute
   '/api/public/prices': typeof ApiPublicPricesRoute
+  '/api/public/tasks': typeof ApiPublicTasksRoute
   '/api/public/ton-verify': typeof ApiPublicTonVerifyRoute
   '/api/public/tonconnect-manifest': typeof ApiPublicTonconnectManifestRoute
   '/api/telegram/invoice': typeof ApiTelegramInvoiceRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByTo {
   '/api/ai/vocals': typeof ApiAiVocalsRoute
   '/api/public/config': typeof ApiPublicConfigRoute
   '/api/public/prices': typeof ApiPublicPricesRoute
+  '/api/public/tasks': typeof ApiPublicTasksRoute
   '/api/public/ton-verify': typeof ApiPublicTonVerifyRoute
   '/api/public/tonconnect-manifest': typeof ApiPublicTonconnectManifestRoute
   '/api/telegram/invoice': typeof ApiTelegramInvoiceRoute
@@ -149,6 +157,7 @@ export interface FileRoutesById {
   '/api/ai/vocals': typeof ApiAiVocalsRoute
   '/api/public/config': typeof ApiPublicConfigRoute
   '/api/public/prices': typeof ApiPublicPricesRoute
+  '/api/public/tasks': typeof ApiPublicTasksRoute
   '/api/public/ton-verify': typeof ApiPublicTonVerifyRoute
   '/api/public/tonconnect-manifest': typeof ApiPublicTonconnectManifestRoute
   '/api/telegram/invoice': typeof ApiTelegramInvoiceRoute
@@ -168,6 +177,7 @@ export interface FileRouteTypes {
     | '/api/ai/vocals'
     | '/api/public/config'
     | '/api/public/prices'
+    | '/api/public/tasks'
     | '/api/public/ton-verify'
     | '/api/public/tonconnect-manifest'
     | '/api/telegram/invoice'
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
     | '/api/ai/vocals'
     | '/api/public/config'
     | '/api/public/prices'
+    | '/api/public/tasks'
     | '/api/public/ton-verify'
     | '/api/public/tonconnect-manifest'
     | '/api/telegram/invoice'
@@ -202,6 +213,7 @@ export interface FileRouteTypes {
     | '/api/ai/vocals'
     | '/api/public/config'
     | '/api/public/prices'
+    | '/api/public/tasks'
     | '/api/public/ton-verify'
     | '/api/public/tonconnect-manifest'
     | '/api/telegram/invoice'
@@ -220,6 +232,7 @@ export interface RootRouteChildren {
   ApiAiVocalsRoute: typeof ApiAiVocalsRoute
   ApiPublicConfigRoute: typeof ApiPublicConfigRoute
   ApiPublicPricesRoute: typeof ApiPublicPricesRoute
+  ApiPublicTasksRoute: typeof ApiPublicTasksRoute
   ApiPublicTonVerifyRoute: typeof ApiPublicTonVerifyRoute
   ApiPublicTonconnectManifestRoute: typeof ApiPublicTonconnectManifestRoute
   ApiTelegramInvoiceRoute: typeof ApiTelegramInvoiceRoute
@@ -299,6 +312,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPricesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/tasks': {
+      id: '/api/public/tasks'
+      path: '/api/public/tasks'
+      fullPath: '/api/public/tasks'
+      preLoaderRoute: typeof ApiPublicTasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/ton-verify': {
       id: '/api/public/ton-verify'
       path: '/api/public/ton-verify'
@@ -348,6 +368,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAiVocalsRoute: ApiAiVocalsRoute,
   ApiPublicConfigRoute: ApiPublicConfigRoute,
   ApiPublicPricesRoute: ApiPublicPricesRoute,
+  ApiPublicTasksRoute: ApiPublicTasksRoute,
   ApiPublicTonVerifyRoute: ApiPublicTonVerifyRoute,
   ApiPublicTonconnectManifestRoute: ApiPublicTonconnectManifestRoute,
   ApiTelegramInvoiceRoute: ApiTelegramInvoiceRoute,
