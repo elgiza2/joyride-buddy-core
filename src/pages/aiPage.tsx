@@ -139,7 +139,7 @@ export default function AiPage() {
         /* cover is optional */
       }
       if (!coverUrl)
-        coverUrl = "/__l5e/assets-v1/4b203ba1-e278-4fcf-8e36-8059bed12db7/music-banner.png";
+        coverUrl = "/bg-poster.jpg";
       setCover(coverUrl);
 
       /* Sing the generated lyrics when the user did not record their own take. */

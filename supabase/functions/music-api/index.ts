@@ -16,6 +16,11 @@ const musicWebhookTelegram = async (method: string, payload: Record<string, unkn
 };
 
 const aiJson = (data: unknown, status = 200) => json(data, status);
+async function fetchTimeout(input: string, init: RequestInit, ms: number) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  try { return await fetch(input, { ...init, signal: controller.signal }); } finally { clearTimeout(timer); }
+}
 const COMPOSE_SYSTEM = `You are a songwriter and composer inside the Music AI app. Return JSON only with title, genre, mood, bpm, key, chords, melody, lyrics, hook, description. Write real lyrics in the same language as the brief. Use 4-8 chords, 8-32 MIDI notes between 55 and 88 (0 is rest), bpm 70-150, and 8-14 lyric lines.`;
 
 async function composeTrack(prompt: string) {
@@ -40,30 +45,82 @@ async function composeTrack(prompt: string) {
 async function lovableCover(prompt: string): Promise<string | null> {
   const key = Deno.env.get("LOVABLE_API_KEY");
   if (!key) return null;
-  try {
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "google/gemini-2.5-flash-image", modalities: ["image", "text"], messages: [{ role: "user", content: `${prompt}, clean modern album cover, rich gradient lighting, no text, no watermark` }] }),
-    });
-    if (!res.ok) return null;
-    const body = await res.json();
-    return body?.choices?.[0]?.message?.images?.[0]?.image_url?.url ?? null;
-  } catch { return null; }
+  for (let attempt = 0; attempt < 1; attempt += 1) {
+    try {
+      const res = await fetchTimeout("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ model: "google/gemini-2.5-flash-image", modalities: ["image", "text"], messages: [{ role: "user", content: `${prompt}, clean modern album cover, rich gradient lighting, no text, no watermark` }] }),
+      }, 10000);
+      if (!res.ok) continue;
+      const body = await res.json();
+      const url = body?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+      if (typeof url === "string" && url.length > 20) return url;
+    } catch { /* retry once */ }
+  }
+  return null;
+}
+
+async function deapiImage(prompt: string, apiKey: string): Promise<string | null> {
+  const headers = { Authorization: `Bearer ${apiKey}`, Accept: "application/json", "Content-Type": "application/json" };
+  const modelsRes = await fetchTimeout("https://api.deapi.ai/api/v2/models?limit=50&filter[inference_types]=txt2img", { headers }, 8000).catch(() => null);
+  if (!modelsRes) return null;
+  if (!modelsRes.ok) return null;
+  const modelsBody = await modelsRes.json();
+  const model = modelsBody?.data?.find((x: any) => Array.isArray(x.inference_types) && x.inference_types.includes("txt2img"));
+  if (!model?.slug) return null;
+  const limits = model.info?.limits ?? {};
+  const fit = (value: number, min: number | undefined, max: number | undefined, step: number | undefined) => {
+    let v = Math.max(min ?? value, Math.min(max ?? value, value));
+    if (step) v = Math.max(min ?? step, Math.floor(v / step) * step);
+    return v;
+  };
+  const width = fit(768, limits.min_width, limits.max_width, limits.resolution_step);
+  const height = fit(768, limits.min_height, limits.max_height, limits.resolution_step);
+  const steps = fit(Number(model.info?.defaults?.steps ?? 4), limits.min_steps, limits.max_steps, undefined);
+  const createRes = await fetchTimeout("https://api.deapi.ai/api/v2/images/generations", {
+    method: "POST", headers, body: JSON.stringify({ model: model.slug, prompt: `${prompt}, clean modern album cover, rich gradient lighting, no text, no watermark`, width, height, steps, seed: Math.floor(Math.random() * 1000000000) }),
+  }, 12000).catch(() => null);
+  if (!createRes) return null;
+  if (!createRes.ok) return null;
+  const created = await createRes.json();
+  const requestId = created?.data?.request_id;
+  if (!requestId) return null;
+  for (let i = 0; i < 5; i += 1) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const resultRes = await fetchTimeout(`https://api.deapi.ai/api/v2/result/${requestId}`, { headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" } }, 1000).catch(() => null);
+    if (!resultRes) continue;
+    if (!resultRes.ok) continue;
+    const result = await resultRes.json();
+    const data = result?.data;
+    if (data?.status === "failed") return null;
+    if (data?.status === "completed" && typeof data.result_url === "string") return data.result_url;
+  }
+  return null;
 }
 
 async function coverImage(prompt: string) {
   const keys: { id: string; api_key: string; calls: number }[] = [];
   const { data } = await supabase.from("music_deepai_keys").select("id,api_key,calls").eq("active", true).order("calls", { ascending: true }).limit(20);
   keys.push(...((data ?? []) as { id: string; api_key: string; calls: number }[]));
-  const { data: shared } = await supabase.from("api_keys").select("id,api_key").in("service", ["deapi", "deepai"]).eq("is_active", true).limit(20);
-  for (const row of (shared ?? []) as { id: string; api_key: string }[]) if (!keys.some((x) => x.api_key === row.api_key)) keys.push({ id: row.id, api_key: row.api_key, calls: 0 });
-  const fallback = Deno.env.get("DEAPI_API_KEY") ?? Deno.env.get("DEEPAI_API_KEY");
+  const { data: shared } = await supabase.from("api_keys").select("id,api_key,service").in("service", ["deapi", "deepai"]).eq("is_active", true).limit(20);
+  const deapiRows = (shared ?? []).filter((x: any) => x.service === "deapi") as { id: string; api_key: string }[];
+  for (const row of deapiRows) {
+    const generated = await deapiImage(prompt, row.api_key).catch(() => null);
+    if (generated) return aiJson({ url: generated, provider: "deapi" });
+  }
+  for (const row of (shared ?? []).filter((x: any) => x.service === "deepai") as { id: string; api_key: string }[]) if (!keys.some((x) => x.api_key === row.api_key)) keys.push({ id: row.id, api_key: row.api_key, calls: 0 });
+  const deapiEnv = Deno.env.get("DEAPI_API_KEY");
+  if (deapiEnv) {
+    const generated = await deapiImage(prompt, deapiEnv).catch(() => null);
+    if (generated) return aiJson({ url: generated, provider: "deapi" });
+  }
+  const fallback = Deno.env.get("DEEPAI_API_KEY");
   if (fallback && !keys.some((x) => x.api_key === fallback)) keys.push({ id: "env", api_key: fallback, calls: 0 });
   for (const row of keys) {
     try {
       const form = new FormData(); form.set("text", `album cover artwork for a song about ${prompt}, clean modern album cover, rich gradient lighting, no text, no watermark`);
-      const res = await fetch("https://api.deepai.org/api/text2img", { method: "POST", headers: { "api-key": row.api_key }, body: form });
+      const res = await fetchTimeout("https://api.deepai.org/api/text2img", { method: "POST", headers: { "api-key": row.api_key }, body: form }, 8000);
       const body = await res.text();
       if (!res.ok) continue;
       const url = (JSON.parse(body) as { output_url?: string }).output_url;
@@ -72,7 +129,8 @@ async function coverImage(prompt: string) {
   }
   const generated = await lovableCover(prompt);
   if (generated) return aiJson({ url: generated });
-  return aiJson({ error: keys.length ? "All DeAPI/DeepAI keys failed and image fallback is unavailable" : "No DeAPI/DeepAI key configured in Supabase" }, 502);
+  // Never return a broken/HTML asset to the UI; keep a valid image visible while providers recover.
+  return aiJson({ url: "https://music.megsyai.com/bg-poster.jpg", generated: false });
 }
 
 async function vocals(data: any) {
