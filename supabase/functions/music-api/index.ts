@@ -32,9 +32,22 @@ async function musicAdminPanel() {
     count("music_tasks", (q) => q.eq("is_active", true)),
     count("music_task_completions"),
     count("star_payments", (q) => q.eq("status", "pending")),
-    count("music_deepai_keys", (q) => q.eq("active", true)),
+    count("api_keys", (q) => q.eq("service", "deapi").eq("is_active", true)),
   ]);
-  return `*Music AI — Admin Panel*\n\nActive tasks: ${activeTasks}\nTask completions: ${completions}\nPending Stars payments: ${pendingPayments}\nActive DeepAI keys: ${activeKeys}`;
+  return `*Music AI — Admin Panel*\n\nActive tasks: ${activeTasks}\nTask completions: ${completions}\nPending Stars payments: ${pendingPayments}\nActive deAPI keys: ${activeKeys}`;
+}
+async function saveAdminDraft(telegramId: number, draft: Record<string, unknown>) {
+  await supabase.from("music_task_drafts").upsert({ telegram_id: telegramId, draft, updated_at: new Date().toISOString() });
+}
+async function getAdminDraft(telegramId: number) {
+  const { data } = await supabase.from("music_task_drafts").select("draft").eq("telegram_id", telegramId).maybeSingle();
+  return (data?.draft ?? null) as Record<string, unknown> | null;
+}
+async function clearAdminDraft(telegramId: number) {
+  await supabase.from("music_task_drafts").delete().eq("telegram_id", telegramId);
+}
+async function adminHelpText() {
+  return "*Admin commands*\\n\\n/addtask\\nSend: `Title | Link | Reward | verify`\\nExample: `Join Music channel | https://t.me/muscox | 100 | link`\\n\\n/addkey\\nSend: `/addkey YOUR_DEAPI_KEY | optional label`\\n\\nYour key is stored in Supabase and never shown back.";
 }
 async function fetchTimeout(input: string, init: RequestInit, ms: number) {
   const controller = new AbortController();
@@ -224,16 +237,66 @@ Deno.serve(async (req) => {
         await starsTelegram("sendMessage", { chat_id: body.message.chat.id, text: `Payment received successfully.\\nOrder: ${payload || "music-ai"}` });
         return json({ ok: true, type: "successful_payment" });
       }
+      if (body?.callback_query && isMusicAdmin(body.callback_query.from?.id)) {
+        await musicWebhookTelegram("answerCallbackQuery", { callback_query_id: body.callback_query.id });
+        if (body.callback_query.data === "music_admin_refresh") {
+          await musicWebhookTelegram("sendMessage", { chat_id: body.callback_query.message?.chat?.id, text: await musicAdminPanel(), parse_mode: "Markdown", reply_markup: { inline_keyboard: [[{ text: "Add task", callback_data: "music_admin_addtask" }, { text: "Add deAPI key", callback_data: "music_admin_addkey" }]] } });
+        } else if (body.callback_query.data === "music_admin_addtask") {
+          const adminId = body.callback_query.from.id as number;
+          await saveAdminDraft(adminId, { type: "task" });
+          await musicWebhookTelegram("sendMessage", { chat_id: body.callback_query.message?.chat?.id, text: "Send the task in this format:\\n`Title | Link | Reward | verify`\\nExample: `Join Music channel | https://t.me/muscox | 100 | link`", parse_mode: "Markdown" });
+        } else if (body.callback_query.data === "music_admin_addkey") {
+          const adminId = body.callback_query.from.id as number;
+          await saveAdminDraft(adminId, { type: "key" });
+          await musicWebhookTelegram("sendMessage", { chat_id: body.callback_query.message?.chat?.id, text: "Send the deAPI key in this format:\\n`/addkey YOUR_DEAPI_KEY | optional label`\\nThe key will be stored securely in Supabase.", parse_mode: "Markdown" });
+        }
+        return json({ ok: true, type: "admin_callback" });
+      }
       const incomingText = typeof body?.message?.text === "string" ? body.message.text.trim() : "";
+      const adminId = body?.message?.from?.id;
       if (incomingText === "/101") {
         if (!isMusicAdmin(body.message.from?.id)) return json({ ok: true, type: "ignored" });
         await musicWebhookTelegram("sendMessage", {
           chat_id: body.message.chat.id,
           text: await musicAdminPanel(),
           parse_mode: "Markdown",
-          reply_markup: { inline_keyboard: [[{ text: "Refresh", callback_data: "music_admin_refresh" }]] },
+          reply_markup: { inline_keyboard: [[{ text: "Add task", callback_data: "music_admin_addtask" }, { text: "Add deAPI key", callback_data: "music_admin_addkey" }], [{ text: "Refresh", callback_data: "music_admin_refresh" }]] },
         });
         return json({ ok: true, type: "admin" });
+      }
+      if (isMusicAdmin(adminId) && adminId) {
+        const draft = await getAdminDraft(adminId);
+        if (incomingText === "/addtask") {
+          await saveAdminDraft(adminId, { type: "task" });
+          await musicWebhookTelegram("sendMessage", { chat_id: body.message.chat.id, text: "Send the task in this format:\\n`Title | Link | Reward | verify`\\nExample: `Join Music channel | https://t.me/muscox | 100 | link`", parse_mode: "Markdown" });
+          return json({ ok: true, type: "admin_addtask_prompt" });
+        }
+        if (incomingText.startsWith("/addkey")) {
+          const raw = incomingText.slice("/addkey".length).trim();
+          if (!raw) {
+            await saveAdminDraft(adminId, { type: "key" });
+            await musicWebhookTelegram("sendMessage", { chat_id: body.message.chat.id, text: "Send the deAPI key in this format:\\n`/addkey YOUR_DEAPI_KEY | optional label`\\nThe key will be stored securely in Supabase.", parse_mode: "Markdown" });
+            return json({ ok: true, type: "admin_addkey_prompt" });
+          }
+          const [apiKey, label = ""] = raw.split("|").map((x: string) => x.trim());
+          if (!apiKey || apiKey.length < 10) { await musicWebhookTelegram("sendMessage", { chat_id: body.message.chat.id, text: "Invalid deAPI key format." }); return json({ ok: true, type: "admin_addkey_invalid" }); }
+          const { error } = await supabase.from("api_keys").insert({ service: "deapi", api_key: apiKey, label: label || "Music deAPI", is_active: true });
+          if (error) { await musicWebhookTelegram("sendMessage", { chat_id: body.message.chat.id, text: "Could not save the deAPI key." }); return json({ ok: false, type: "admin_addkey_error" }); }
+          await clearAdminDraft(adminId);
+          await musicWebhookTelegram("sendMessage", { chat_id: body.message.chat.id, text: "deAPI key added successfully to Supabase." });
+          return json({ ok: true, type: "admin_addkey_saved" });
+        }
+        if (draft?.type === "task" && !incomingText.startsWith("/")) {
+          const [title, linkUrl, rewardText, verifyText = "link"] = incomingText.split("|").map((x: string) => x.trim());
+          const reward = Number(rewardText);
+          const verify = verifyText === "telegram_member" ? "telegram_member" : "link";
+          if (!title || !linkUrl || !Number.isFinite(reward) || reward < 0) { await musicWebhookTelegram("sendMessage", { chat_id: body.message.chat.id, text: "Invalid task. Use: Title | Link | Reward | verify" }); return json({ ok: true, type: "admin_task_invalid" }); }
+          const { error } = await supabase.from("music_tasks").insert({ title, link_url: linkUrl, reward, verify, is_active: true, sort_order: 0 });
+          if (error) { await musicWebhookTelegram("sendMessage", { chat_id: body.message.chat.id, text: "Could not save the task." }); return json({ ok: false, type: "admin_task_error" }); }
+          await clearAdminDraft(adminId);
+          await musicWebhookTelegram("sendMessage", { chat_id: body.message.chat.id, text: `Task added successfully: *${title}*`, parse_mode: "Markdown" });
+          return json({ ok: true, type: "admin_task_saved" });
+        }
       }
       if (incomingText === "/start") {
         const photo = "https://music.megsyai.com/music-start.jpg";
